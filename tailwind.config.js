@@ -8,7 +8,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        primary: ['Inter', ...fontFamily.sans],
+        sans: ['Mozilla Text', ...fontFamily.sans],
+        primary: ['Mozilla Text', ...fontFamily.sans],
+        mozilla: ['Mozilla Text', ...fontFamily.sans],
       },
       colors: {
         primary: {

@@ -11,11 +11,8 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 
 const defaultMeta = {
-  title: 'Coworks | AI-Powered Coworking Space Management',
-  siteName: 'Coworks',
-  description:
-    'Coworks is an AI-powered platform designed to simplify coworking space management. From seamless booking and member management to analytics and community building, our cutting-edge software empowers workspace operators with smart tools to grow their business efficiently.',
-  url: 'https://www.coworks.com',
+  title: 'Pathways | AI-Powered pathways classifier',
+  siteName: '',
   type: 'website',
   robots: 'follow, index',
   image:
@@ -34,7 +31,7 @@ export default function Seo(props: SeoProps) {
     ...props,
   };
   meta['title'] = props.templateTitle
-    ? `${props.templateTitle} | ${meta.siteName} - AI Powered Legal Advisor`
+    ? `${props.templateTitle} | ${meta.siteName} - AI Powered Pathway Classifier`
     : meta.title;
 
   return (
@@ -42,34 +39,29 @@ export default function Seo(props: SeoProps) {
       <title>{meta.title}</title>
       <meta
         name='title'
-        content='Legal AdvisoryAI | AI Powered Legal Advisor'
+        content='Pathways | AI Powered Pathway Classsifier'
       />
       {/* Description */}
       <meta
         name='description'
-        content='Legal AdvisoryAI is an advanced AI-powered legal advisor providing expert legal guidance, document review, and legal insights. Our platform uses cutting-edge artificial intelligence to offer accurate legal support and streamline legal research for individuals and businesses.'
+        content='Pathways is an advanced AI-powered pathway classifier providing expert legal guidance, document review, and legal insights. Our platform uses cutting-edge artificial intelligence to offer accurate legal support and streamline legal research for individuals and businesses.'
       />
       {/* Keywords */}
       <meta
         name='keywords'
-        content='Legal AdvisoryAI, AI-powered legal advisor, legal guidance, legal document review, legal technology, legal insights, AI legal assistant, legal research, legal support platform, expert legal solutions, AI law, legal tech, legal automation, legal AI tools'
+        content='Pathways, AI-powered pathway classifier, legal guidance, legal document review, legal technology, legal insights, AI legal assistant, legal research, legal support platform, expert legal solutions, AI law, legal tech, legal automation, legal AI tools'
       />
       {/* Author */}
       <meta name='author' content='Egide Ntwari' />
       <meta name='robots' content={meta.robots} />
-      <meta content={meta.description} name='description' />
-      <meta property='og:url' content={`${meta.url}${router.asPath}`} />
-      <link rel='canonical' href={`${meta.url}${router.asPath}`} />
       {/* Open Graph */}
       <meta property='og:type' content={meta.type} />
       <meta property='og:site_name' content={meta.siteName} />
-      <meta property='og:description' content={meta.description} />
       <meta property='og:title' content={meta.title} />
       <meta name='image' property='og:image' content={meta.image} />
       {/* Twitter */}
       <meta name='twitter:card' content='summary_large_image' />
       <meta name='twitter:title' content={meta.title} />
-      <meta name='twitter:description' content={meta.description} />
       <meta name='twitter:image' content={meta.image} />
       {meta.date && (
         <>

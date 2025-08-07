@@ -124,15 +124,14 @@ ${batchPrompt}`,
 
         const classifications = text.split('\n\n').map((block) => {
           const lines = block.trim().split('\n');
-          const pathwayLine = lines.find((l) => l.startsWith('Pathway:')) ?? '';
-          const classLine = lines.find((l) => l.startsWith('Class:')) ?? '';
+          const pathwayLine = lines.find((l) => l.startsWith('Pathway:')) || '';
+          const classLine = lines.find((l) => l.startsWith('Class:')) || '';
           const subclassLine =
-            lines.find((l) => l.startsWith('Subclass:')) ?? '';
+            lines.find((l) => l.startsWith('Subclass:')) || '';
           return {
-            pathway: pathwayLine.replace('Pathway:', '').trim(),
-            classAssigned: classLine.replace('Class:', '').trim() || 'Unknown',
-            subclassAssigned:
-              subclassLine.replace('Subclass:', '').trim() || 'Unknown',
+            pathway: pathwayLine ? pathwayLine.replace('Pathway:', '').trim() : '',
+            classAssigned: classLine ? classLine.replace('Class:', '').trim() || 'Unknown' : 'Unknown',
+            subclassAssigned: subclassLine ? subclassLine.replace('Subclass:', '').trim() || 'Unknown' : 'Unknown',
           };
         });
 
@@ -184,7 +183,7 @@ ${batchPrompt}`,
         .join('\n');
 
     return res.status(200).json({
-      preview: finalData.slice(0, 10),
+      preview: finalData, // Return all data for proper pagination
       tsv,
     });
   } catch (error) {

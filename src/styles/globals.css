@@ -7,19 +7,159 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mozilla+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
+
+/* Global font inheritance */
+* {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+html {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
 
 body {
-  font-family: 'Montserrat', sans-serif !important;
+  font-family: 'Mozilla Text', sans-serif !important;
   background-color: white;
 }
 
-h1 {
-  font-family: 'Montserrat', sans-serif;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Mozilla Text', sans-serif !important;
 }
 
-.Montserrat__font {
-  font-family: 'Montserrat', sans-serif !important;
+/* Ant Design Components */
+.ant-btn {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-input {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-input-search {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-table {
+  font-family: 'Mozilla Text', sans-serif !important;
+  font-size: 14px !important;
+}
+
+.ant-table .ant-table-thead > tr > th {
+  font-family: 'Mozilla Text', sans-serif !important;
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+}
+
+.ant-table .ant-table-tbody > tr > td {
+  font-family: 'Mozilla Text', sans-serif !important;
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+}
+
+.ant-pagination {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-pagination .ant-pagination-item {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-pagination .ant-pagination-item a {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-spin {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-spin-text {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-upload {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-upload-text {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-typography {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-typography h1,
+.ant-typography h2,
+.ant-typography h3,
+.ant-typography h4,
+.ant-typography h5,
+.ant-typography h6 {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-typography p {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+/* Additional components that might need font override */
+.ant-menu {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-menu-item {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-dropdown {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-select {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-select-selector {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-message {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-notification {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-modal {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-modal-title {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.ant-modal-content {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+/* Ensure all text elements inherit the font */
+span, div, p, a, button, input, textarea, select, label {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+/* Specific header styling */
+.main-header {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+.main-header h1 {
+  font-family: 'Mozilla Text', sans-serif !important;
+}
+
+/* Force font on all elements */
+* {
+  font-family: 'Mozilla Text', sans-serif !important;
 }
 
 h1 {
@@ -27,7 +167,7 @@ h1 {
 }
 
 p {
-  font-size: 2vh;
+  font-size: 15px;
   font-weight: normal !important;
 }
 
@@ -63,7 +203,7 @@ li.ant-menu-item.ant-menu-item-selected {
   border-radius: 100px !important;
 }
 
-aside.ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger.h-\[90vh\].Montserrat__font.bg-\[\#29404F\] {
+aside.ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger.h-\[90vh\].bg-\[\#29404F\] {
   position: sticky;
   top: 8vh;
 }
@@ -75,8 +215,18 @@ header.ant-layout-header.flex.justify-between.bg-white.py-2.border-b.border-b-\[
 }
 
 .ant-table {
-  font-family: 'Montserrat' !important;
+  font-family: 'Mozilla Text' !important;
+  font-size: 14px !important;
+}
+
+.ant-table .ant-table-thead > tr > th {
   font-size: 13px !important;
+  padding: 8px 12px !important;
+}
+
+.ant-table .ant-table-tbody > tr > td {
+  font-size: 14px !important;
+  padding: 8px 12px !important;
 }
 
 .ant-pagination .ant-pagination-item-active {
