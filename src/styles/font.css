@@ -1,0 +1,7 @@
+/**
+ * author: Egide
+* @file font.css
+* @description Font face declarations for the project. This file is imported in _app.js and is therefore applied to all pages.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');

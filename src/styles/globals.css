@@ -1,0 +1,90 @@
+/**
+  * This file is used to define global styles for the application.
+  * It is imported in _app.js and is therefore applied to all pages.
+  * It is also used to define Tailwind CSS classes and components.
+  */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+  font-family: 'Montserrat', sans-serif !important;
+  background-color: white;
+}
+
+h1 {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.Montserrat__font {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+h1 {
+  color: #09090d;
+}
+
+p {
+  font-size: 2vh;
+  font-weight: normal !important;
+}
+
+.ant-layout-sider-trigger {
+  background-color: #263238 !important;
+}
+
+li.ant-menu-item.ant-menu-item-selected {
+  background: transparent;
+  border-radius: 0 !important;
+  border-left: 1px solid white;
+}
+
+.ant-menu-light.ant-menu-horizontal > .ant-menu-item-selected::after {
+  border-bottom-width: 2px;
+  border-bottom-color: #269796 !important;
+}
+
+.ant-menu-light.ant-menu-horizontal > .ant-menu-item-selected svg {
+  color: #269796 !important;
+}
+
+.ant-menu-light.ant-menu-horizontal > .ant-menu-item-selected span {
+  color: black !important;
+}
+
+.ant-menu-light.ant-menu-horizontal > .ant-menu-item:hover::after {
+  border-bottom-width: 2px;
+  border-bottom-color: transparent !important;
+}
+
+.ant-select-selector {
+  border-radius: 100px !important;
+}
+
+aside.ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger.h-\[90vh\].Montserrat__font.bg-\[\#29404F\] {
+  position: sticky;
+  top: 8vh;
+}
+
+header.ant-layout-header.flex.justify-between.bg-white.py-2.border-b.border-b-\[\#E9EAEB\] {
+  position: sticky;
+  top: 0px;
+  z-index: 10;
+}
+
+.ant-table {
+  font-family: 'Montserrat' !important;
+  font-size: 13px !important;
+}
+
+.ant-pagination .ant-pagination-item-active {
+  font-weight: 600;
+  background-color: #ffffff;
+  border-color: #259796 !important;
+}
+
+.ant-pagination .ant-pagination-item-active a {
+  color: #259796 !important;
+}
