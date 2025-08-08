@@ -27,7 +27,6 @@ interface PathwayRow {
   Species: string;
   Source: string;
   URL: string;
-  'UniProt IDS': string;
   Pathway_Class_assigned?: string;
   Subclass_assigned?: string;
 }
@@ -47,53 +46,163 @@ const PathwaysPage = () => {
   const [originalData, setOriginalData] = useState<PathwayRow[]>([]); // Store original parsed data
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [processingTime, setProcessingTime] = useState<string>('');
+  const [totalPathways, setTotalPathways] = useState<number>(0);
+  const [progress, setProgress] = useState<{
+    message: string;
+    processed: number;
+    total: number;
+    percentage: number;
+  } | null>(null);
+  const [isFreshClassification, setIsFreshClassification] = useState(false);
 
   // Reset pagination when search text changes
   useEffect(() => {
     setCurrentPage(1);
   }, [searchText]);
 
-  // Function to process data and update state
+  // Function to process data and update state with streaming
   const processData = async (pathwaysData: PathwayRow[]) => {
+    await processDataInternal(pathwaysData, false);
+  };
+
+  // Function to process data with cache reset
+  const processDataWithCacheReset = async (pathwaysData: PathwayRow[]) => {
+    await processDataInternal(pathwaysData, true);
+  };
+
+  // Internal function to handle data processing
+  const processDataInternal = async (pathwaysData: PathwayRow[], resetCache: boolean) => {
     setLoading(true);
+    setProgress(null);
+    
     try {
-      const response = await axios.post('/api/pathways-assign', {
-        pathways: pathwaysData,
-      });
+      // Try streaming API first, fallback to regular API
+      try {
+        const response = await fetch('/api/pathways-assign-stream', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            pathways: pathwaysData,
+            resetCache: resetCache 
+          }),
+        });
 
-      if (!response || !response.data) {
-        message.error('No response received from server.');
-        return;
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error('No response body');
+        }
+
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          
+          if (done) break;
+          
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6));
+                
+                if (data.type === 'progress') {
+                  setProgress({
+                    message: data.message,
+                    processed: data.processed,
+                    total: data.total,
+                    percentage: data.percentage,
+                  });
+                } else if (data.type === 'complete') {
+                  const blob = new Blob([data.tsv], {
+                    type: 'text/tab-separated-values',
+                  });
+                  const url = URL.createObjectURL(blob);
+                  setDownloadUrl(url);
+
+                  // Add unique IDs to each row
+                  const dataWithIds = (data.preview || []).map(
+                    (row: PathwayRow, index: number) => ({
+                      ...row,
+                      id: generateUniqueId(),
+                      key: index,
+                    })
+                  );
+
+                  setData(dataWithIds);
+                  setProcessingTime(data.processingTime || '');
+                  setTotalPathways(data.totalPathways || 0);
+                  setCurrentPage(1);
+                  setProgress(null);
+                  setIsFreshClassification(false);
+                } else if (data.error) {
+                  message.error(data.error);
+                  setProgress(null);
+                }
+              } catch (parseError) {
+                console.error('Error parsing SSE data:', parseError);
+              }
+            }
+          }
+        }
+      } catch (streamingError) {
+        console.log('Streaming API failed, falling back to regular API:', streamingError);
+        
+        // Fallback to regular API
+        const response = await axios.post('/api/pathways-assign', {
+          pathways: pathwaysData,
+          resetCache: resetCache,
+        });
+
+        if (!response || !response.data) {
+          message.error('No response received from server.');
+          return;
+        }
+
+        if (response.status !== 200 || !response.data.tsv) {
+          message.error('Unexpected server error or malformed response.');
+          return;
+        }
+
+        const blob = new Blob([response.data.tsv], {
+          type: 'text/tab-separated-values',
+        });
+        const url = URL.createObjectURL(blob);
+        setDownloadUrl(url);
+
+        // Add unique IDs to each row
+        const dataWithIds = (response.data.preview || []).map(
+          (row: PathwayRow, index: number) => ({
+            ...row,
+            id: generateUniqueId(),
+            key: index,
+          })
+        );
+
+        setData(dataWithIds);
+        setProcessingTime(response.data.processingTime || '');
+        setTotalPathways(response.data.totalPathways || 0);
+        setCurrentPage(1);
+        setIsFreshClassification(false);
       }
-
-      if (response.status !== 200 || !response.data.tsv) {
-        message.error('Unexpected server error or malformed response.');
-        return;
-      }
-
-      const blob = new Blob([response.data.tsv], {
-        type: 'text/tab-separated-values',
-      });
-      const url = URL.createObjectURL(blob);
-      setDownloadUrl(url);
-
-      // Add unique IDs to each row
-      const dataWithIds = (response.data.preview || []).map(
-        (row: PathwayRow, index: number) => ({
-          ...row,
-          id: generateUniqueId(),
-          key: index, // Add a stable key for table rendering
-        })
-      );
-
-      setData(dataWithIds);
-      setCurrentPage(1); // Reset to first page when new data is loaded
     } catch (err: any) {
       console.error('API error:', err);
       message.error('Server error. Check network or try again later.');
-    } finally {
-      setLoading(false);
-    }
+              setProgress(null);
+        setIsFreshClassification(false);
+      } finally {
+        setLoading(false);
+      }
   };
 
   // Function to refresh/reprocess the same data
@@ -102,8 +211,10 @@ const PathwaysPage = () => {
       message.warning('No data to refresh. Please upload a file first.');
       return;
     }
-    message.info('Re-processing the same data with AI...');
-    processData(originalData);
+    setIsFreshClassification(true);
+    console.log('Cache reset requested - fresh classification will be performed');
+    message.info('Re-processing the same data with fresh AI classification (cache cleared)...');
+    processDataWithCacheReset(originalData);
   };
 
   const props: UploadProps = {
@@ -121,7 +232,7 @@ const PathwaysPage = () => {
         complete: async (result) => {
           // Store the original parsed data for refresh functionality
           setOriginalData(result.data);
-          // Process the data
+          // Process the data (without cache reset for initial upload)
           await processData(result.data);
         },
         error: (error) => {
@@ -172,24 +283,6 @@ const PathwaysPage = () => {
             {record.URL?.replace(/^https?:\/\//, '') || record.URL || ''}
           </a>
         </div>
-      ),
-    },
-    {
-      title: 'UniProt IDS',
-      dataIndex: 'UniProt IDS',
-      width: 160,
-      render: (text: string) => (
-        <Paragraph
-          ellipsis={{ rows: 1, expandable: true, symbol: 'more' }}
-          style={{
-            whiteSpace: 'normal',
-            wordBreak: 'break-word',
-            maxWidth: 160,
-            margin: 0,
-          }}
-        >
-          {text}
-        </Paragraph>
       ),
     },
     {
@@ -279,7 +372,12 @@ const PathwaysPage = () => {
                 >
                   <div className='flex items-center gap-2'>
                     <ReloadOutlined className={loading ? 'animate-spin' : ''} />
-                    <span>Refresh AI Classification</span>
+                    <span>
+                      {isFreshClassification && loading 
+                        ? 'Fresh AI Classification...' 
+                        : 'Refresh AI Classification'
+                      }
+                    </span>
                   </div>
                 </Button>
               )}
@@ -330,20 +428,37 @@ const PathwaysPage = () => {
             </div>
           )}
 
-          {/* Loading State */}
+          {/* Loading State with Progress */}
           {loading && (
             <div className='text-center py-12 animate-fade-in'>
-              <div className='inline-flex items-center gap-4 bg-white/60 backdrop-blur-sm rounded-2xl px-8 py-6 shadow-md'>
+              <div className='inline-flex flex-col items-center gap-4 bg-white/60 backdrop-blur-sm rounded-2xl px-8 py-6 shadow-md max-w-md'>
                 <div className='relative'>
                   <div className='w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin'></div>
                 </div>
-                <div>
+                <div className='text-center'>
                   <p className='text-base font-medium text-slate-800'>
-                    Processing with AI...
+                    {isFreshClassification ? 'Fresh AI Classification...' : 'Processing with AI...'}
                   </p>
-                  <p className='text-sm text-slate-600'>
-                    Analyzing your pathways data
-                  </p>
+                  {progress ? (
+                    <div className='mt-3'>
+                      <p className='text-sm text-slate-600 mb-2'>
+                        {progress.message}
+                      </p>
+                      <div className='w-full bg-gray-200 rounded-full h-2 mb-2'>
+                        <div 
+                          className='bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-300'
+                          style={{ width: `${progress.percentage}%` }}
+                        ></div>
+                      </div>
+                      <p className='text-xs text-slate-500'>
+                        {progress.processed} of {progress.total} pathways processed ({progress.percentage}%)
+                      </p>
+                    </div>
+                  ) : (
+                    <p className='text-sm text-slate-600'>
+                      Analyzing your pathways data
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -358,7 +473,17 @@ const PathwaysPage = () => {
                 </h3>
                 <p className='text-sm text-slate-600'>
                   Showing {filteredData.length} of {data.length} pathways
+                  {processingTime && (
+                    <span className='ml-2 text-green-600 font-medium'>
+                      • Processed in {processingTime} seconds
+                    </span>
+                  )}
                 </p>
+                {totalPathways > 0 && (
+                  <p className='text-xs text-slate-500 mt-1'>
+                    Total pathways processed: {totalPathways}
+                  </p>
+                )}
               </div>
 
               <div className='bg-white/60 backdrop-blur-sm rounded-2xl border border-white/20 overflow-hidden'>

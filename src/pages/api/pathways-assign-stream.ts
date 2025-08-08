@@ -114,230 +114,60 @@ function classifyPathwayFallback(pathwayName: string): {
     };
   }
 
-  // Immune system patterns (using exact Reactome names with specific subclasses)
+  // Immune system patterns
   if (
     name.includes('immune') ||
-    name.includes('inflammatory') ||
     name.includes('tcr') ||
     name.includes('mhc') ||
-    name.includes('viral') ||
-    name.includes('myocarditis')
+    name.includes('antigen')
   ) {
-    if (
-      name.includes('adaptive') ||
-      name.includes('tcr') ||
-      name.includes('t cell')
-    ) {
+    if (name.includes('adaptive') || name.includes('t cell')) {
       return { class: 'Immune System', subclass: 'Adaptive Immune System' };
     }
-    if (
-      name.includes('cytokine') ||
-      name.includes('interferon') ||
-      name.includes('viral') ||
-      name.includes('myocarditis')
-    ) {
-      return {
-        class: 'Immune System',
-        subclass: 'Cytokine Signaling in Immune system',
-      };
-    }
-    if (name.includes('mhc') || name.includes('antigen')) {
-      return {
-        class: 'Immune System',
-        subclass: 'MHC class II antigen presentation',
-      };
-    }
-    return {
-      class: 'Immune System',
-      subclass: 'Cytokine Signaling in Immune system',
-    };
+    return { class: 'Immune System', subclass: 'Cytokine Signaling in Immune system' };
   }
 
-  // Gene expression patterns (using exact Reactome names)
+  // Gene expression patterns
   if (
     name.includes('transcription') ||
-    name.includes('rna polymerase') ||
-    name.includes('gene expression')
+    name.includes('rna') ||
+    name.includes('splicing') ||
+    name.includes('mrna')
   ) {
-    if (name.includes('rna polymerase') || name.includes('pol ii')) {
-      return {
-        class: 'Gene expression (Transcription)',
-        subclass: 'RNA Polymerase II Transcription',
-      };
-    }
-    if (
-      name.includes('splicing') ||
-      name.includes('mrna') ||
-      name.includes('intron')
-    ) {
-      return {
-        class: 'Gene expression (Transcription)',
-        subclass: 'Processing of Capped Intron-Containing Pre-mRNA',
-      };
-    }
-    return {
-      class: 'Gene expression (Transcription)',
-      subclass: 'Generic Transcription Pathway',
-    };
+    return { class: 'Gene expression (Transcription)', subclass: 'mRNA Splicing' };
   }
 
-  // Neuronal/Sensory patterns (using exact Reactome names)
+  // Cell cycle patterns
+  if (name.includes('cell cycle') || name.includes('mitosis')) {
+    return { class: 'Cell Cycle', subclass: 'Mitotic Cell Cycle' };
+  }
+
+  // Neuronal system patterns
   if (
-    name.includes('neural') ||
     name.includes('neuron') ||
     name.includes('synapse') ||
-    name.includes('neurotransmitter') ||
-    name.includes('adhd') ||
-    name.includes('autism')
+    name.includes('neurotransmitter')
   ) {
-    if (
-      name.includes('neurotransmitter') ||
-      name.includes('synapse') ||
-      name.includes('postsynaptic')
-    ) {
-      return {
-        class: 'Neuronal System',
-        subclass:
-          'Neurotransmitter receptors and postsynaptic signal transmission',
-      };
-    }
-    if (name.includes('transmission') || name.includes('chemical synapse')) {
-      return {
-        class: 'Neuronal System',
-        subclass: 'Transmission across Chemical Synapses',
-      };
-    }
     return {
       class: 'Neuronal System',
       subclass: 'Transmission across Chemical Synapses',
     };
   }
 
-  // Visual/Sensory patterns (using exact Reactome names)
-  if (
-    name.includes('visual') ||
-    name.includes('photo') ||
-    name.includes('vision') ||
-    name.includes('retina')
-  ) {
-    return {
-      class: 'Sensory Perception',
-      subclass: 'Visual phototransduction',
-    };
-  }
-
-  // Developmental patterns (using exact Reactome names)
-  if (
-    name.includes('development') ||
-    name.includes('developmental') ||
-    name.includes('axon') ||
-    name.includes('guidance')
-  ) {
-    if (name.includes('nervous') || name.includes('neural development')) {
-      return {
-        class: 'Developmental Biology',
-        subclass: 'Nervous system development',
-      };
-    }
-    if (name.includes('axon') || name.includes('guidance')) {
-      return { class: 'Developmental Biology', subclass: 'Axon guidance' };
-    }
-    return {
-      class: 'Developmental Biology',
-      subclass: 'Nervous system development',
-    };
-  }
-
-  // Cell communication patterns (using exact Reactome names)
-  if (
-    name.includes('cell-cell') ||
-    name.includes('communication') ||
-    name.includes('adhesion') ||
-    name.includes('junction') ||
-    name.includes('adherens')
-  ) {
-    if (name.includes('nephrin') || name.includes('kidney')) {
-      return {
-        class: 'Cell-Cell communication',
-        subclass: 'Nephrin family interactions',
-      };
-    }
-    if (name.includes('semaphorin') || name.includes('sema')) {
-      return {
-        class: 'Cell-Cell communication',
-        subclass: 'Semaphorin interactions',
-      };
-    }
-    if (name.includes('adherens') || name.includes('junction')) {
-      return {
-        class: 'Cell-Cell communication',
-        subclass: 'Adherens junctions interactions',
-      };
-    }
+  // Cell communication patterns
+  if (name.includes('cell-cell') || name.includes('adherens')) {
     return {
       class: 'Cell-Cell communication',
-      subclass: 'Cell junction organization',
+      subclass: 'Adherens junctions interactions',
     };
   }
 
-  // Extracellular matrix patterns (using exact Reactome names)
-  if (
-    name.includes('collagen') ||
-    name.includes('matrix') ||
-    name.includes('extracellular')
-  ) {
-    if (name.includes('collagen formation') || name.includes('biosynthesis')) {
-      return {
-        class: 'Extracellular matrix organization',
-        subclass: 'Collagen formation',
-      };
-    }
-    return {
-      class: 'Extracellular matrix organization',
-      subclass: 'Collagen biosynthesis and modifying enzymes',
-    };
-  }
-
-  // Transport patterns (using exact Reactome names)
-  if (
-    name.includes('transport') ||
-    name.includes('channel') ||
-    name.includes('transporter')
-  ) {
-    return {
-      class: 'Transport of small molecules',
-      subclass: 'Stimuli-sensing channels',
-    };
-  }
-
-  // Cell death patterns (using exact Reactome names with proper subclasses)
-  if (
-    name.includes('apoptosis') ||
-    name.includes('cell death') ||
-    name.includes('programmed death') ||
-    name.includes('leukemia') ||
-    name.includes('cancer')
-  ) {
-    if (name.includes('apoptosis') || name.includes('leukemia')) {
-      return { class: 'Programmed Cell Death', subclass: 'Apoptosis' };
-    }
+  // Programmed cell death patterns
+  if (name.includes('apoptosis') || name.includes('death')) {
     return { class: 'Programmed Cell Death', subclass: 'Apoptosis' };
   }
 
-  // Drug/Toxicology patterns (using exact Reactome names)
-  if (name.includes('drug') || name.includes('toxic')) {
-    return { class: 'Drug ADME', subclass: 'Xenobiotic metabolism' };
-  }
-
-  // DNA patterns (using exact Reactome names)
-  if (name.includes('dna repair') || name.includes('repair')) {
-    return { class: 'DNA Repair', subclass: 'Base Excision Repair' };
-  }
-  if (name.includes('dna replication') || name.includes('replication')) {
-    return { class: 'DNA Replication', subclass: 'Synthesis of DNA' };
-  }
-
-  // Default fallback (using exact Reactome names)
+  // Default fallback
   return { class: 'Metabolism', subclass: 'Metabolism of proteins' };
 }
 
@@ -345,18 +175,36 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  // Set headers for Server-Sent Events
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Cache-Control');
+
+  const startTime = Date.now();
+  const data: PathwayRow[] = req.body.pathways;
+  const resetCache = req.body.resetCache || false; // New parameter to reset cache
+
+  if (!Array.isArray(data) || data.length === 0) {
+    res.write(`data: ${JSON.stringify({ error: 'Invalid or empty pathways data' })}\n\n`);
+    res.end();
+    return;
+  }
+
   try {
-    if (req.method !== 'POST') {
-      return res.status(405).json({ error: 'Method Not Allowed' });
-    }
-
-    const startTime = Date.now();
-    const data: PathwayRow[] = req.body.pathways;
-    const resetCache = req.body.resetCache || false; // New parameter to reset cache
-
-    if (!Array.isArray(data) || data.length === 0) {
-      return res.status(400).json({ error: 'Invalid or empty pathways data' });
-    }
+    // Send initial progress
+    res.write(`data: ${JSON.stringify({ 
+      type: 'progress', 
+      message: 'Starting pathway classification...',
+      processed: 0,
+      total: data.length,
+      percentage: 0
+    })}\n\n`);
 
     const examples = data
       .filter(
@@ -395,14 +243,6 @@ export default async function handler(
       - Extracellular Matrix: "Collagen formation", "Collagen biosynthesis and modifying enzymes", "Assembly of collagen fibrils and other multimeric structures"
       - Generic Transcription Pathway
       - Transcriptional activity of SMAD2/SMAD3:SMAD4 heterotrimer
-      - Downregulation of SMAD2/3:SMAD4 transcriptional activity
-      - Stimuli-sensing channels
-      - PTEN Regulation
-      - RNA Polymerase II Transcription
-      - Signaling by Rho GTPases
-      - RHO GTPase cycle
-      - RAC1 GTPase cycle
-      - Signaling by Rho GTPases, Miro GTPases and RHOBTB3
       - Visual phototransduction
       - The phototransduction cascade
       - Inactivation, recovery and regulation of the phototransduction cascade
@@ -435,54 +275,6 @@ export default async function handler(
       - Transmission across Chemical Synapses
       - Nephrin family interactions
 
-      HIERARCHICAL CLASSIFICATION MAPPING (Class → Subclass → Pathway):
-      
-      **Metabolism Hierarchy:**
-      - Class: "Metabolism"
-      - Subclasses: "Metabolism of proteins", "Metabolism of RNA", "Metabolism of amino acids and derivatives"
-      - Example: Acrylamide biotransformation → Class: "Drug ADME", Subclass: "Xenobiotic metabolism"
-      
-      **Signal Transduction Hierarchy:**
-      - Class: "Signal Transduction"
-      - Subclasses: "Signaling by Receptor Tyrosine Kinases", "MAPK family signaling cascades", "Signaling by Rho GTPases", "Intracellular signaling by second messengers"
-      - Example: Adipocytokine signaling → Class: "Signal Transduction", Subclass: "Signaling by Receptor Tyrosine Kinases"
-      
-      **Immune System Hierarchy:**
-      - Class: "Immune System"
-      - Subclasses: "Adaptive Immune System", "Cytokine Signaling in Immune system", "Innate Immune System"
-      - Example: Acute viral myocarditis → Class: "Immune System", Subclass: "Cytokine Signaling in Immune system"
-      
-      **Gene Expression Hierarchy:**
-      - Class: "Gene expression (Transcription)"
-      - Subclasses: "RNA Polymerase II Transcription", "Processing of Capped Intron-Containing Pre-mRNA", "mRNA Splicing"
-      
-      **Neuronal System Hierarchy:**
-      - Class: "Neuronal System"
-      - Subclasses: "Transmission across Chemical Synapses", "Neurotransmitter receptors and postsynaptic signal transmission"
-      - Example: ADHD pathways → Class: "Neuronal System", Subclass: "Transmission across Chemical Synapses"
-      
-      **Cell-Cell Communication Hierarchy:**
-      - Class: "Cell-Cell communication"
-      - Subclasses: "Cell junction organization", "Adherens junctions interactions", "Gap junction trafficking"
-      - Example: Adherens junction → Class: "Cell-Cell communication", Subclass: "Adherens junctions interactions"
-      
-      **Programmed Cell Death Hierarchy:**
-      - Class: "Programmed Cell Death"
-      - Subclasses: "Apoptosis", "Necroptosis", "Autophagy"
-      - Example: Acute myeloid leukemia → Class: "Programmed Cell Death", Subclass: "Apoptosis"
-      
-      **Drug ADME Hierarchy:**
-      - Class: "Drug ADME"
-      - Subclasses: "Xenobiotic metabolism", "Drug metabolism", "Phase I - Functionalization of compounds"
-      
-      **Developmental Biology Hierarchy:**
-      - Class: "Developmental Biology"
-      - Subclasses: "Nervous system development", "Axon guidance", "Semaphorin interactions"
-      
-      **Extracellular Matrix Hierarchy:**
-      - Class: "Extracellular matrix organization"
-      - Subclasses: "Collagen formation", "Collagen biosynthesis and modifying enzymes", "Assembly of collagen fibrils and other multimeric structures"
-
       EXAMPLES:
       ${examples
         .map(
@@ -510,24 +302,30 @@ export default async function handler(
       console.log('Cache cleared for fresh classification');
     }
 
-    const batchSize = 100; // Increased batch size for better efficiency
+    const batchSize = 50;
     const batches = batchArray(others, batchSize);
-
-    // Process batches in parallel with concurrency limit
-    const concurrencyLimit = 5; // Process 5 batches simultaneously
+    const concurrencyLimit = 5;
     const updatedOthers: (PathwayRow & {
       Pathway_Class_assigned: string;
       Subclass_assigned: string;
     })[] = [];
 
-    // Process batches in chunks to avoid overwhelming the API
     let processedCount = 0;
     const totalPathways = others.length;
-    
+
+    // Process batches in chunks
     for (let i = 0; i < batches.length; i += concurrencyLimit) {
       const batchChunk = batches.slice(i, i + concurrencyLimit);
       
-      console.log(`Processing batch ${Math.floor(i/concurrencyLimit) + 1}/${Math.ceil(batches.length/concurrencyLimit)} (${processedCount}/${totalPathways} pathways processed)`);
+      // Send progress update
+      const percentage = Math.round((processedCount / totalPathways) * 100);
+      res.write(`data: ${JSON.stringify({ 
+        type: 'progress', 
+        message: `Processing batch ${Math.floor(i/concurrencyLimit) + 1}/${Math.ceil(batches.length/concurrencyLimit)}`,
+        processed: processedCount,
+        total: totalPathways,
+        percentage
+      })}\n\n`);
       
       const batchPromises = batchChunk.map(async (batch) => {
         // Check cache first and separate cached vs uncached pathways
@@ -579,8 +377,6 @@ ${batchPrompt}`,
         };
 
         try {
-          console.log(`Processing batch of ${batch.length} pathways...`);
-          
           // Retry logic for API calls
           let retries = 3;
           let response;
@@ -592,37 +388,27 @@ ${batchPrompt}`,
                 temperature: 0.3,
                 messages: [...messages, userPrompt],
               });
-              break; // Success, exit retry loop
+              break;
             } catch (apiError: any) {
               retries--;
-              console.error(`API call failed, retries left: ${retries}`, apiError.message);
               if (retries === 0) {
-                throw apiError; // Re-throw if all retries exhausted
+                throw apiError;
               }
-              // Wait before retrying (exponential backoff)
               await new Promise(resolve => setTimeout(resolve, (3 - retries) * 1000));
             }
           }
 
           const text = response!.choices[0].message?.content ?? '';
-          console.log(`Batch classification response:\n${text}`);
 
           const classifications = text.split('\n\n').map((block) => {
             const lines = block.trim().split('\n');
             const pathwayLine = lines.find((l) => l.startsWith('Pathway:')) || '';
             const classLine = lines.find((l) => l.startsWith('Class:')) || '';
-            const subclassLine =
-              lines.find((l) => l.startsWith('Subclass:')) || '';
+            const subclassLine = lines.find((l) => l.startsWith('Subclass:')) || '';
             return {
-              pathway: pathwayLine
-                ? pathwayLine.replace('Pathway:', '').trim()
-                : '',
-              classAssigned: classLine
-                ? classLine.replace('Class:', '').trim() || 'Unknown'
-                : 'Unknown',
-              subclassAssigned: subclassLine
-                ? subclassLine.replace('Subclass:', '').trim() || 'Unknown'
-                : 'Unknown',
+              pathway: pathwayLine ? pathwayLine.replace('Pathway:', '').trim() : '',
+              classAssigned: classLine ? classLine.replace('Class:', '').trim() || 'Unknown' : 'Unknown',
+              subclassAssigned: subclassLine ? subclassLine.replace('Subclass:', '').trim() || 'Unknown' : 'Unknown',
             };
           });
 
@@ -642,21 +428,13 @@ ${batchPrompt}`,
           return batch.map((row) => {
             const match = allResults.find((c) => c.pathway === row.Pathway);
 
-            // Fallback classification logic if AI returns Unknown or no match
             let classAssigned = match?.classAssigned ?? 'Unknown';
             let subclassAssigned = match?.subclassAssigned ?? 'Unknown';
 
-            // If AI returned Unknown, try to classify based on pathway name
             if (classAssigned === 'Unknown' || subclassAssigned === 'Unknown') {
               const fallbackClassification = classifyPathwayFallback(row.Pathway);
-              classAssigned =
-                classAssigned === 'Unknown'
-                  ? fallbackClassification.class
-                  : classAssigned;
-              subclassAssigned =
-                subclassAssigned === 'Unknown'
-                  ? fallbackClassification.subclass
-                  : subclassAssigned;
+              classAssigned = classAssigned === 'Unknown' ? fallbackClassification.class : classAssigned;
+              subclassAssigned = subclassAssigned === 'Unknown' ? fallbackClassification.subclass : subclassAssigned;
             }
 
             // Cache fallback results too
@@ -683,16 +461,12 @@ ${batchPrompt}`,
         }
       });
 
-      // Wait for all batches in this chunk to complete
       const batchResults = await Promise.all(batchPromises);
       
-      // Flatten results and add to updatedOthers
       batchResults.forEach(result => {
         updatedOthers.push(...result);
         processedCount += result.length;
       });
-      
-      console.log(`Completed batch ${Math.floor(i/concurrencyLimit) + 1}. Total processed: ${processedCount}/${totalPathways}`);
     }
 
     const updatedReactome = reactomeRows.map((row) => ({
@@ -716,22 +490,24 @@ ${batchPrompt}`,
       'Subclass_assigned',
     ];
 
-    const tsv =
-      headers.join('\t') +
-      '\n' +
-      finalData
-        .map((row) => headers.map((h) => (row as any)[h] ?? '').join('\t'))
-        .join('\n');
+    const tsv = headers.join('\t') + '\n' + finalData
+      .map((row) => headers.map((h) => (row as any)[h] ?? '').join('\t'))
+      .join('\n');
 
-    return res.status(200).json({
-      preview: finalData, // Return all data for proper pagination
+    // Send final results
+    res.write(`data: ${JSON.stringify({ 
+      type: 'complete', 
+      preview: finalData,
       tsv,
       processingTime: processingTimeSeconds,
-      totalPathways: finalData.length,
-    });
+      totalPathways: finalData.length
+    })}\n\n`);
+
+    res.end();
   } catch (error) {
     console.error('Unexpected API error:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    res.write(`data: ${JSON.stringify({ error: 'Internal Server Error' })}\n\n`);
+    res.end();
   }
 }
 
