@@ -4,4 +4,6 @@
 * @description Font face declarations for the project. This file is imported in _app.js and is therefore applied to all pages.
 */
 
-/* Mozilla Text font is now imported in globals.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Inter Tight font import */

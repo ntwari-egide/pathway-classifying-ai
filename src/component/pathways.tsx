@@ -46,44 +46,44 @@ const PathwaysPage = () => {
 
   // Function to process data and update state
   const processData = async (pathwaysData: PathwayRow[]) => {
-    setLoading(true);
-    try {
-      const response = await axios.post('/api/pathways-assign', {
+      setLoading(true);
+          try {
+            const response = await axios.post('/api/pathways-assign', {
         pathways: pathwaysData,
-      });
+            });
 
-      if (!response || !response.data) {
-        message.error('No response received from server.');
-        return;
-      }
+            if (!response || !response.data) {
+              message.error('No response received from server.');
+              return;
+            }
 
-      if (response.status !== 200 || !response.data.tsv) {
-        message.error('Unexpected server error or malformed response.');
-        return;
-      }
+            if (response.status !== 200 || !response.data.tsv) {
+              message.error('Unexpected server error or malformed response.');
+              return;
+            }
 
-      const blob = new Blob([response.data.tsv], {
-        type: 'text/tab-separated-values',
-      });
-      const url = URL.createObjectURL(blob);
-      setDownloadUrl(url);
+            const blob = new Blob([response.data.tsv], {
+              type: 'text/tab-separated-values',
+            });
+            const url = URL.createObjectURL(blob);
+            setDownloadUrl(url);
 
-      // Add unique IDs to each row
-      const dataWithIds = (response.data.preview || []).map(
+            // Add unique IDs to each row
+            const dataWithIds = (response.data.preview || []).map(
         (row: PathwayRow, index: number) => ({
-          ...row,
-          id: generateUniqueId(),
+                ...row,
+                id: generateUniqueId(),
           key: index, // Add a stable key for table rendering
-        })
-      );
+              })
+            );
 
-      setData(dataWithIds);
-    } catch (err: any) {
-      console.error('API error:', err);
-      message.error('Server error. Check network or try again later.');
-    } finally {
-      setLoading(false);
-    }
+            setData(dataWithIds);
+          } catch (err: any) {
+            console.error('API error:', err);
+            message.error('Server error. Check network or try again later.');
+          } finally {
+            setLoading(false);
+          }
   };
 
   // Function to refresh/reprocess the same data
@@ -195,48 +195,48 @@ const PathwaysPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-6 font-sans font-inter-tight">
       {/* Main Container */}
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto font-sans font-inter-tight">
         {/* Header Section */}
-        <div className="text-center mb-12 animate-fade-in main-header">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-4" style={{ fontFamily: 'Mozilla Text, sans-serif' }}>
+        <div className="text-center mb-12 animate-fade-in main-header font-sans">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-4 font-sans">
             AI Pathway Classification
           </h1>
-          <p className="text-base text-slate-600 max-w-2xl mx-auto">
+          <p className="text-base text-slate-600 max-w-2xl mx-auto font-sans">
             Upload your pathways data and let our AI intelligently classify and reassign pathway classes with advanced machine learning
           </p>
         </div>
 
         {/* Main Content Card */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-white/20 p-8 mb-8 animate-slide-up">
-          {/* Upload Section */}
-          <div className="mb-8">
-                          <div className="text-center mb-6">
-                <h2 className="text-xl font-semibold text-slate-800 mb-2">Upload Your Data</h2>
-                <p className="text-sm text-slate-600">Start by uploading your pathways TSV file</p>
-              </div>
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-white/20 p-8 mb-8 animate-slide-up font-sans">
+                    {/* Upload Section */}
+          <div className="mb-8 font-sans">
+            <div className="text-center mb-6 font-sans">
+              <h2 className="text-xl font-semibold text-slate-800 mb-2 font-sans">Upload Your Data</h2>
+              <p className="text-sm text-slate-600 font-sans">Start by uploading your pathways TSV file</p>
+            </div>
             
-            <div className="flex justify-center">
-              <Upload {...props} showUploadList={false}>
+            <div className="flex justify-center font-sans">
+        <Upload {...props} showUploadList={false}>
                 <Button 
                   size="large"
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-0 text-white px-6 py-3 h-auto text-base font-medium rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-0 text-white px-6 py-3 h-auto text-base font-medium rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 font-sans"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 font-sans">
                     <UploadOutlined className="text-xl" />
-                    <span>Upload pathways_classes_proteins_all.tsv</span>
+                    <span className="font-sans">Upload pathways_classes_proteins_all.tsv</span>
                   </div>
-                </Button>
-              </Upload>
+          </Button>
+        </Upload>
             </div>
           </div>
 
           {/* Action Buttons */}
           {(downloadUrl || originalData.length > 0) && (
-            <div className="flex justify-center gap-4 mb-8 animate-fade-in">
-              {downloadUrl && (
-                <a href={downloadUrl} download='pathways_class_reassigned.tsv'>
+            <div className="flex justify-center gap-4 mb-8 animate-fade-in" style={{ fontFamily: 'Inter Tight, sans-serif' }}>
+        {downloadUrl && (
+          <a href={downloadUrl} download='pathways_class_reassigned.tsv'>
                   <Button 
                     type='primary'
                     size="large"
@@ -246,9 +246,9 @@ const PathwaysPage = () => {
                       <DownloadOutlined />
                       <span>Download Results</span>
                     </div>
-                  </Button>
-                </a>
-              )}
+            </Button>
+          </a>
+        )}
 
               {originalData.length > 0 && (
                 <Button 
@@ -268,22 +268,23 @@ const PathwaysPage = () => {
 
           {/* Search Section */}
           {data.length > 0 && (
-            <div className="mb-8 animate-fade-in">
-              <div className="text-center mb-4">
-                <h3 className="text-lg font-semibold text-slate-800 mb-2">Search & Filter</h3>
-                <p className="text-sm text-slate-600">Find specific pathways in your results</p>
+            <div className="mb-8 animate-fade-in" style={{ fontFamily: 'Inter Tight, sans-serif' }}>
+              <div className="text-center mb-4" style={{ fontFamily: 'Inter Tight, sans-serif' }}>
+                <h3 className="text-lg font-semibold text-slate-800 mb-2" style={{ fontFamily: 'Inter Tight, sans-serif' }}>Search & Filter</h3>
+                <p className="text-sm text-slate-600" style={{ fontFamily: 'Inter Tight, sans-serif' }}>Find specific pathways in your results</p>
               </div>
-              <div className="flex justify-center">
-                <Input.Search
-                  placeholder='Search across all fields...'
-                  allowClear
-                  enterButton
-                  onSearch={(value) => setSearchText(value)}
-                  onChange={(e) => setSearchText(e.target.value)}
+              <div className="flex justify-center" style={{ fontFamily: 'Inter Tight, sans-serif' }}>
+        <Input.Search
+          placeholder='Search across all fields...'
+          allowClear
+          enterButton
+          onSearch={(value) => setSearchText(value)}
+          onChange={(e) => setSearchText(e.target.value)}
                   className="max-w-md"
                   size="large"
                   style={{
                     borderRadius: '12px',
+                    fontFamily: 'Inter Tight, sans-serif'
                   }}
                 />
               </div>
@@ -316,12 +317,12 @@ const PathwaysPage = () => {
               </div>
               
               <div className="bg-white/60 backdrop-blur-sm rounded-2xl border border-white/20 overflow-hidden">
-                <Table
-                  dataSource={filteredData}
-                  columns={columns}
+          <Table
+            dataSource={filteredData}
+            columns={columns}
                   rowKey='key'
-                  expandable={{
-                    expandedRowRender: (record) => (
+            expandable={{
+              expandedRowRender: (record) => (
                       <div className='bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl m-4'>
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                           <div className='space-y-3'>
@@ -363,19 +364,109 @@ const PathwaysPage = () => {
             </div>
           )}
 
-          {/* Empty State */}
+          {/* Empty State - Redesigned */}
           {!loading && data.length === 0 && (
-            <div className="text-center py-16 animate-fade-in">
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-12 max-w-md mx-auto shadow-md">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <UploadOutlined className="text-2xl text-white" />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in" style={{ fontFamily: 'Inter Tight, sans-serif' }}>
+              {/* Main Info Card */}
+              <div className="lg:col-span-2 bg-white/90 backdrop-blur-sm rounded-2xl shadow-sm border border-white/30 p-8" style={{ fontFamily: 'Inter Tight, sans-serif' }}>
+                <div className="flex items-start gap-4 mb-6" style={{ fontFamily: 'Inter Tight, sans-serif' }}>
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-sm">
+                    <UploadOutlined className="text-lg text-white" />
+                  </div>
+                  <div style={{ fontFamily: 'Inter Tight, sans-serif' }}>
+                    <h3 className="text-xl font-semibold text-slate-800 mb-2" style={{ fontFamily: 'Inter Tight, sans-serif' }}>Get Started with AI Classification</h3>
+                    <p className="text-slate-600 leading-relaxed" style={{ fontFamily: 'Inter Tight, sans-serif' }}>
+                      Transform your biological pathways data with intelligent AI classification. 
+                      Upload your TSV file and get instant, accurate pathway class assignments.
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-3">Ready to Get Started?</h3>
-                <p className="text-sm text-slate-600 mb-6">
-                  Upload your pathways TSV file above to begin AI-powered classification
-                </p>
-                <div className="text-xs text-slate-500">
-                  <p>Supported format: TSV files up to 20MB</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                        <span className="text-white text-sm font-bold">1</span>
+                      </div>
+                      <h4 className="font-semibold text-green-800">Upload File</h4>
+                    </div>
+                    <p className="text-sm text-green-700">Upload your pathways TSV file using the button above</p>
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+                        <span className="text-white text-sm font-bold">2</span>
+                      </div>
+                      <h4 className="font-semibold text-purple-800">AI Processing</h4>
+                    </div>
+                    <p className="text-sm text-purple-700">Our AI analyzes and classifies each pathway automatically</p>
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <span className="text-white text-sm font-bold">3</span>
+                      </div>
+                      <h4 className="font-semibold text-blue-800">Get Results</h4>
+                    </div>
+                    <p className="text-sm text-blue-700">Download your classified data and view detailed results</p>
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-200">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+                        <span className="text-white text-sm font-bold">4</span>
+                      </div>
+                      <h4 className="font-semibold text-orange-800">Refine & Improve</h4>
+                    </div>
+                    <p className="text-sm text-orange-700">Use the refresh button to get alternative classifications</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Side Info Card */}
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-sm border border-white/30 p-6">
+                <h4 className="font-semibold text-slate-800 mb-4">File Requirements</h4>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                    <div className="w-8 h-8 bg-slate-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">TSV</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-800">Tab-separated values</p>
+                      <p className="text-xs text-slate-600">Required format</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                    <div className="w-8 h-8 bg-slate-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">20MB</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-800">Maximum file size</p>
+                      <p className="text-xs text-slate-600">For optimal processing</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                    <div className="w-8 h-8 bg-slate-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">✓</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-800">Pathway data</p>
+                      <p className="text-xs text-slate-600">Biological pathways</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center gap-2 text-sm text-blue-700">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span className="font-medium">Ready to upload?</span>
+                  </div>
+                  <p className="text-xs text-blue-600 mt-1">Use the upload button at the top of the page</p>
                 </div>
               </div>
             </div>
