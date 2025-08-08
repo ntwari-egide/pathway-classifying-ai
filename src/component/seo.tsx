@@ -37,10 +37,7 @@ export default function Seo(props: SeoProps) {
   return (
     <Head>
       <title>{meta.title}</title>
-      <meta
-        name='title'
-        content='Pathways | AI Powered Pathway Classsifier'
-      />
+      <meta name='title' content='Pathways | AI Powered Pathway Classsifier' />
       {/* Description */}
       <meta
         name='description'

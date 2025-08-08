@@ -29,140 +29,304 @@ function batchArray<T>(arr: T[], size: number): T[][] {
 }
 
 // Fallback classification function using EXACT Reactome terminology
-function classifyPathwayFallback(pathwayName: string): { class: string; subclass: string } {
+function classifyPathwayFallback(pathwayName: string): {
+  class: string;
+  subclass: string;
+} {
   const name = pathwayName.toLowerCase();
-  
+
   // Metabolism patterns (using exact Reactome names with proper subclasses)
   if (name.includes('metabolism') || name.includes('metabolic')) {
     if (name.includes('amino acid') || name.includes('serine')) {
-      return { class: 'Metabolism', subclass: 'Metabolism of amino acids and derivatives' };
+      return {
+        class: 'Metabolism',
+        subclass: 'Metabolism of amino acids and derivatives',
+      };
     }
     if (name.includes('rna') || name.includes('splicing')) {
       return { class: 'Metabolism', subclass: 'Metabolism of RNA' };
     }
     return { class: 'Metabolism', subclass: 'Metabolism of proteins' };
   }
-  
+
   // Drug/Biotransformation patterns (using exact Reactome names)
-  if (name.includes('biotransformation') || name.includes('acrylamide') || name.includes('exposure') || name.includes('biomarker')) {
+  if (
+    name.includes('biotransformation') ||
+    name.includes('acrylamide') ||
+    name.includes('exposure') ||
+    name.includes('biomarker')
+  ) {
     return { class: 'Drug ADME', subclass: 'Xenobiotic metabolism' };
   }
-  
+
   // Signaling patterns (using exact Reactome names)
   if (name.includes('signaling') || name.includes('signal')) {
     if (name.includes('erbb') || name.includes('erb')) {
       return { class: 'Signal Transduction', subclass: 'Signaling by ERBB4' };
     }
-    if (name.includes('akt') || name.includes('pi3k') || name.includes('pip3')) {
-      return { class: 'Signal Transduction', subclass: 'PIP3 activates AKT signaling' };
+    if (
+      name.includes('akt') ||
+      name.includes('pi3k') ||
+      name.includes('pip3')
+    ) {
+      return {
+        class: 'Signal Transduction',
+        subclass: 'PIP3 activates AKT signaling',
+      };
     }
     if (name.includes('tgf') || name.includes('smad')) {
-      return { class: 'Signal Transduction', subclass: 'Signaling by TGF-beta Receptor Complex' };
+      return {
+        class: 'Signal Transduction',
+        subclass: 'Signaling by TGF-beta Receptor Complex',
+      };
     }
-    if (name.includes('rho') || name.includes('rac') || name.includes('gtpase')) {
-      return { class: 'Signal Transduction', subclass: 'Signaling by Rho GTPases' };
+    if (
+      name.includes('rho') ||
+      name.includes('rac') ||
+      name.includes('gtpase')
+    ) {
+      return {
+        class: 'Signal Transduction',
+        subclass: 'Signaling by Rho GTPases',
+      };
     }
-    if (name.includes('mapk') || name.includes('raf') || name.includes('kinase')) {
-      return { class: 'Signal Transduction', subclass: 'MAPK family signaling cascades' };
+    if (
+      name.includes('mapk') ||
+      name.includes('raf') ||
+      name.includes('kinase')
+    ) {
+      return {
+        class: 'Signal Transduction',
+        subclass: 'MAPK family signaling cascades',
+      };
     }
     if (name.includes('met') || name.includes('receptor tyrosine')) {
-      return { class: 'Signal Transduction', subclass: 'Signaling by Receptor Tyrosine Kinases' };
+      return {
+        class: 'Signal Transduction',
+        subclass: 'Signaling by Receptor Tyrosine Kinases',
+      };
     }
-    return { class: 'Signal Transduction', subclass: 'Intracellular signaling by second messengers' };
+    return {
+      class: 'Signal Transduction',
+      subclass: 'Intracellular signaling by second messengers',
+    };
   }
-  
+
   // Immune system patterns (using exact Reactome names with specific subclasses)
-  if (name.includes('immune') || name.includes('inflammatory') || name.includes('tcr') || name.includes('mhc') || name.includes('viral') || name.includes('myocarditis')) {
-    if (name.includes('adaptive') || name.includes('tcr') || name.includes('t cell')) {
+  if (
+    name.includes('immune') ||
+    name.includes('inflammatory') ||
+    name.includes('tcr') ||
+    name.includes('mhc') ||
+    name.includes('viral') ||
+    name.includes('myocarditis')
+  ) {
+    if (
+      name.includes('adaptive') ||
+      name.includes('tcr') ||
+      name.includes('t cell')
+    ) {
       return { class: 'Immune System', subclass: 'Adaptive Immune System' };
     }
-    if (name.includes('cytokine') || name.includes('interferon') || name.includes('viral') || name.includes('myocarditis')) {
-      return { class: 'Immune System', subclass: 'Cytokine Signaling in Immune system' };
+    if (
+      name.includes('cytokine') ||
+      name.includes('interferon') ||
+      name.includes('viral') ||
+      name.includes('myocarditis')
+    ) {
+      return {
+        class: 'Immune System',
+        subclass: 'Cytokine Signaling in Immune system',
+      };
     }
     if (name.includes('mhc') || name.includes('antigen')) {
-      return { class: 'Immune System', subclass: 'MHC class II antigen presentation' };
+      return {
+        class: 'Immune System',
+        subclass: 'MHC class II antigen presentation',
+      };
     }
-    return { class: 'Immune System', subclass: 'Cytokine Signaling in Immune system' };
+    return {
+      class: 'Immune System',
+      subclass: 'Cytokine Signaling in Immune system',
+    };
   }
-  
+
   // Gene expression patterns (using exact Reactome names)
-  if (name.includes('transcription') || name.includes('rna polymerase') || name.includes('gene expression')) {
+  if (
+    name.includes('transcription') ||
+    name.includes('rna polymerase') ||
+    name.includes('gene expression')
+  ) {
     if (name.includes('rna polymerase') || name.includes('pol ii')) {
-      return { class: 'Gene expression (Transcription)', subclass: 'RNA Polymerase II Transcription' };
+      return {
+        class: 'Gene expression (Transcription)',
+        subclass: 'RNA Polymerase II Transcription',
+      };
     }
-    if (name.includes('splicing') || name.includes('mrna') || name.includes('intron')) {
-      return { class: 'Gene expression (Transcription)', subclass: 'Processing of Capped Intron-Containing Pre-mRNA' };
+    if (
+      name.includes('splicing') ||
+      name.includes('mrna') ||
+      name.includes('intron')
+    ) {
+      return {
+        class: 'Gene expression (Transcription)',
+        subclass: 'Processing of Capped Intron-Containing Pre-mRNA',
+      };
     }
-    return { class: 'Gene expression (Transcription)', subclass: 'Generic Transcription Pathway' };
+    return {
+      class: 'Gene expression (Transcription)',
+      subclass: 'Generic Transcription Pathway',
+    };
   }
-  
+
   // Neuronal/Sensory patterns (using exact Reactome names)
-  if (name.includes('neural') || name.includes('neuron') || name.includes('synapse') || name.includes('neurotransmitter') || name.includes('adhd') || name.includes('autism')) {
-    if (name.includes('neurotransmitter') || name.includes('synapse') || name.includes('postsynaptic')) {
-      return { class: 'Neuronal System', subclass: 'Neurotransmitter receptors and postsynaptic signal transmission' };
+  if (
+    name.includes('neural') ||
+    name.includes('neuron') ||
+    name.includes('synapse') ||
+    name.includes('neurotransmitter') ||
+    name.includes('adhd') ||
+    name.includes('autism')
+  ) {
+    if (
+      name.includes('neurotransmitter') ||
+      name.includes('synapse') ||
+      name.includes('postsynaptic')
+    ) {
+      return {
+        class: 'Neuronal System',
+        subclass:
+          'Neurotransmitter receptors and postsynaptic signal transmission',
+      };
     }
     if (name.includes('transmission') || name.includes('chemical synapse')) {
-      return { class: 'Neuronal System', subclass: 'Transmission across Chemical Synapses' };
+      return {
+        class: 'Neuronal System',
+        subclass: 'Transmission across Chemical Synapses',
+      };
     }
-    return { class: 'Neuronal System', subclass: 'Transmission across Chemical Synapses' };
+    return {
+      class: 'Neuronal System',
+      subclass: 'Transmission across Chemical Synapses',
+    };
   }
-  
+
   // Visual/Sensory patterns (using exact Reactome names)
-  if (name.includes('visual') || name.includes('photo') || name.includes('vision') || name.includes('retina')) {
-    return { class: 'Sensory Perception', subclass: 'Visual phototransduction' };
+  if (
+    name.includes('visual') ||
+    name.includes('photo') ||
+    name.includes('vision') ||
+    name.includes('retina')
+  ) {
+    return {
+      class: 'Sensory Perception',
+      subclass: 'Visual phototransduction',
+    };
   }
-  
+
   // Developmental patterns (using exact Reactome names)
-  if (name.includes('development') || name.includes('developmental') || name.includes('axon') || name.includes('guidance')) {
+  if (
+    name.includes('development') ||
+    name.includes('developmental') ||
+    name.includes('axon') ||
+    name.includes('guidance')
+  ) {
     if (name.includes('nervous') || name.includes('neural development')) {
-      return { class: 'Developmental Biology', subclass: 'Nervous system development' };
+      return {
+        class: 'Developmental Biology',
+        subclass: 'Nervous system development',
+      };
     }
     if (name.includes('axon') || name.includes('guidance')) {
       return { class: 'Developmental Biology', subclass: 'Axon guidance' };
     }
-    return { class: 'Developmental Biology', subclass: 'Nervous system development' };
+    return {
+      class: 'Developmental Biology',
+      subclass: 'Nervous system development',
+    };
   }
-  
+
   // Cell communication patterns (using exact Reactome names)
-  if (name.includes('cell-cell') || name.includes('communication') || name.includes('adhesion') || name.includes('junction') || name.includes('adherens')) {
+  if (
+    name.includes('cell-cell') ||
+    name.includes('communication') ||
+    name.includes('adhesion') ||
+    name.includes('junction') ||
+    name.includes('adherens')
+  ) {
     if (name.includes('nephrin') || name.includes('kidney')) {
-      return { class: 'Cell-Cell communication', subclass: 'Nephrin family interactions' };
+      return {
+        class: 'Cell-Cell communication',
+        subclass: 'Nephrin family interactions',
+      };
     }
     if (name.includes('semaphorin') || name.includes('sema')) {
-      return { class: 'Cell-Cell communication', subclass: 'Semaphorin interactions' };
+      return {
+        class: 'Cell-Cell communication',
+        subclass: 'Semaphorin interactions',
+      };
     }
     if (name.includes('adherens') || name.includes('junction')) {
-      return { class: 'Cell-Cell communication', subclass: 'Adherens junctions interactions' };
+      return {
+        class: 'Cell-Cell communication',
+        subclass: 'Adherens junctions interactions',
+      };
     }
-    return { class: 'Cell-Cell communication', subclass: 'Cell junction organization' };
+    return {
+      class: 'Cell-Cell communication',
+      subclass: 'Cell junction organization',
+    };
   }
-  
+
   // Extracellular matrix patterns (using exact Reactome names)
-  if (name.includes('collagen') || name.includes('matrix') || name.includes('extracellular')) {
+  if (
+    name.includes('collagen') ||
+    name.includes('matrix') ||
+    name.includes('extracellular')
+  ) {
     if (name.includes('collagen formation') || name.includes('biosynthesis')) {
-      return { class: 'Extracellular matrix organization', subclass: 'Collagen formation' };
+      return {
+        class: 'Extracellular matrix organization',
+        subclass: 'Collagen formation',
+      };
     }
-    return { class: 'Extracellular matrix organization', subclass: 'Collagen biosynthesis and modifying enzymes' };
+    return {
+      class: 'Extracellular matrix organization',
+      subclass: 'Collagen biosynthesis and modifying enzymes',
+    };
   }
-  
+
   // Transport patterns (using exact Reactome names)
-  if (name.includes('transport') || name.includes('channel') || name.includes('transporter')) {
-    return { class: 'Transport of small molecules', subclass: 'Stimuli-sensing channels' };
+  if (
+    name.includes('transport') ||
+    name.includes('channel') ||
+    name.includes('transporter')
+  ) {
+    return {
+      class: 'Transport of small molecules',
+      subclass: 'Stimuli-sensing channels',
+    };
   }
-  
+
   // Cell death patterns (using exact Reactome names with proper subclasses)
-  if (name.includes('apoptosis') || name.includes('cell death') || name.includes('programmed death') || name.includes('leukemia') || name.includes('cancer')) {
+  if (
+    name.includes('apoptosis') ||
+    name.includes('cell death') ||
+    name.includes('programmed death') ||
+    name.includes('leukemia') ||
+    name.includes('cancer')
+  ) {
     if (name.includes('apoptosis') || name.includes('leukemia')) {
       return { class: 'Programmed Cell Death', subclass: 'Apoptosis' };
     }
     return { class: 'Programmed Cell Death', subclass: 'Apoptosis' };
   }
-  
+
   // Drug/Toxicology patterns (using exact Reactome names)
   if (name.includes('drug') || name.includes('toxic')) {
     return { class: 'Drug ADME', subclass: 'Xenobiotic metabolism' };
   }
-  
+
   // DNA patterns (using exact Reactome names)
   if (name.includes('dna repair') || name.includes('repair')) {
     return { class: 'DNA Repair', subclass: 'Base Excision Repair' };
@@ -170,7 +334,7 @@ function classifyPathwayFallback(pathwayName: string): { class: string; subclass
   if (name.includes('dna replication') || name.includes('replication')) {
     return { class: 'DNA Replication', subclass: 'Synthesis of DNA' };
   }
-  
+
   // Default fallback (using exact Reactome names)
   return { class: 'Metabolism', subclass: 'Metabolism of proteins' };
 }
@@ -444,26 +608,38 @@ ${batchPrompt}`,
           const subclassLine =
             lines.find((l) => l.startsWith('Subclass:')) || '';
           return {
-            pathway: pathwayLine ? pathwayLine.replace('Pathway:', '').trim() : '',
-            classAssigned: classLine ? classLine.replace('Class:', '').trim() || 'Unknown' : 'Unknown',
-            subclassAssigned: subclassLine ? subclassLine.replace('Subclass:', '').trim() || 'Unknown' : 'Unknown',
+            pathway: pathwayLine
+              ? pathwayLine.replace('Pathway:', '').trim()
+              : '',
+            classAssigned: classLine
+              ? classLine.replace('Class:', '').trim() || 'Unknown'
+              : 'Unknown',
+            subclassAssigned: subclassLine
+              ? subclassLine.replace('Subclass:', '').trim() || 'Unknown'
+              : 'Unknown',
           };
         });
 
         batch.forEach((row) => {
           const match = classifications.find((c) => c.pathway === row.Pathway);
-          
+
           // Fallback classification logic if AI returns Unknown or no match
           let classAssigned = match?.classAssigned ?? 'Unknown';
           let subclassAssigned = match?.subclassAssigned ?? 'Unknown';
-          
+
           // If AI returned Unknown, try to classify based on pathway name
           if (classAssigned === 'Unknown' || subclassAssigned === 'Unknown') {
             const fallbackClassification = classifyPathwayFallback(row.Pathway);
-            classAssigned = classAssigned === 'Unknown' ? fallbackClassification.class : classAssigned;
-            subclassAssigned = subclassAssigned === 'Unknown' ? fallbackClassification.subclass : subclassAssigned;
+            classAssigned =
+              classAssigned === 'Unknown'
+                ? fallbackClassification.class
+                : classAssigned;
+            subclassAssigned =
+              subclassAssigned === 'Unknown'
+                ? fallbackClassification.subclass
+                : subclassAssigned;
           }
-          
+
           updatedOthers.push({
             ...row,
             Pathway_Class_assigned: classAssigned,
@@ -497,7 +673,7 @@ ${batchPrompt}`,
       'Species',
       'Source',
       'URL',
-      'UniProt IDS', 
+      'UniProt IDS',
       'Pathway_Class_assigned',
       'Subclass_assigned',
     ];

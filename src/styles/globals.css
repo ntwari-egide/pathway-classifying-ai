@@ -23,7 +23,12 @@ body {
   background-color: white;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Inter Tight', sans-serif !important;
 }
 
@@ -144,7 +149,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Ensure all text elements inherit the font */
-span, div, p, a, button, input, textarea, select, label {
+span,
+div,
+p,
+a,
+button,
+input,
+textarea,
+select,
+label {
   font-family: 'Inter Tight', sans-serif !important;
 }
 
@@ -168,7 +181,10 @@ span, div, p, a, button, input, textarea, select, label {
 }
 
 /* Override any conflicting styles */
-body, html, #__next, #__next > div {
+body,
+html,
+#__next,
+#__next > div {
   font-family: 'Inter Tight', sans-serif !important;
 }
 
@@ -247,4 +263,43 @@ header.ant-layout-header.flex.justify-between.bg-white.py-2.border-b.border-b-\[
 
 .ant-pagination .ant-pagination-item-active a {
   color: #259796 !important;
+}
+
+/* Pagination custom styles */
+.pagination-custom .ant-pagination-item {
+  border-radius: 8px !important;
+  margin: 0 2px !important;
+}
+
+.pagination-custom .ant-pagination-item-active {
+  background-color: #259796 !important;
+  border-color: #259796 !important;
+}
+
+.pagination-custom .ant-pagination-item-active a {
+  color: white !important;
+}
+
+.pagination-custom .ant-pagination-prev,
+.pagination-custom .ant-pagination-next {
+  border-radius: 8px !important;
+  margin: 0 2px !important;
+}
+
+.pagination-custom .ant-pagination-options {
+  margin-left: 16px !important;
+}
+
+.pagination-custom .ant-pagination-options-quick-jumper {
+  margin-left: 8px !important;
+}
+
+/* Ensure pagination controls are visible and functional */
+.ant-table-pagination {
+  margin: 16px 0 !important;
+  padding: 0 16px !important;
+}
+
+.ant-table-pagination .ant-pagination-total {
+  margin-right: 16px !important;
 }
