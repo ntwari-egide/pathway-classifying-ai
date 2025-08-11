@@ -1,4 +1,5 @@
-import { type RedisClientType,createClient } from 'redis';
+/* eslint-disable @typescript-eslint/no-empty-function */
+import { type RedisClientType, createClient } from 'redis';
 
 export type Classification = { class: string; subclass: string };
 
@@ -118,8 +119,12 @@ export const classificationCache = {
     }
   },
 
-  async setMany(entries: Array<{ pathwayName: string; value: Classification }>) {
-    entries.forEach(({ pathwayName, value }) => inMemory.set(pathwayName, value));
+  async setMany(
+    entries: Array<{ pathwayName: string; value: Classification }>
+  ) {
+    entries.forEach(({ pathwayName, value }) =>
+      inMemory.set(pathwayName, value)
+    );
     const redis = await getRedis();
     if (!redis) return;
     await Promise.all(
@@ -131,5 +136,3 @@ export const classificationCache = {
     );
   },
 };
-
-

@@ -3,20 +3,10 @@ import {
   ReloadOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
-import {
-  Button,
-  Input,
-  message,
-  Table,
-  Typography,
-  Upload,
-  UploadProps,
-} from 'antd';
+import { Button, Input, message, Table, Upload, UploadProps } from 'antd';
 import axios from 'axios';
 import * as Papa from 'papaparse';
 import { useEffect, useState } from 'react';
-
-const { Paragraph } = Typography;
 
 interface PathwayRow {
   id?: string; // Add unique id field
@@ -72,10 +62,13 @@ const PathwaysPage = () => {
   };
 
   // Internal function to handle data processing
-  const processDataInternal = async (pathwaysData: PathwayRow[], resetCache: boolean) => {
+  const processDataInternal = async (
+    pathwaysData: PathwayRow[],
+    resetCache: boolean
+  ) => {
     setLoading(true);
     setProgress(null);
-    
+
     try {
       // Try streaming API first, fallback to regular API
       try {
@@ -84,9 +77,9 @@ const PathwaysPage = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             pathways: pathwaysData,
-            resetCache: resetCache 
+            resetCache: resetCache,
           }),
         });
 
@@ -102,11 +95,11 @@ const PathwaysPage = () => {
         const decoder = new TextDecoder();
         let buffer = '';
 
+        // eslint-disable-next-line no-constant-condition
         while (true) {
           const { done, value } = await reader.read();
-          
+
           if (done) break;
-          
           buffer += decoder.decode(value, { stream: true });
           const lines = buffer.split('\n');
           buffer = lines.pop() || '';
@@ -115,7 +108,7 @@ const PathwaysPage = () => {
             if (line.startsWith('data: ')) {
               try {
                 const data = JSON.parse(line.slice(6));
-                
+
                 if (data.type === 'progress') {
                   setProgress({
                     message: data.message,
@@ -156,8 +149,11 @@ const PathwaysPage = () => {
           }
         }
       } catch (streamingError) {
-        console.log('Streaming API failed, falling back to regular API:', streamingError);
-        
+        console.log(
+          'Streaming API failed, falling back to regular API:',
+          streamingError
+        );
+
         // Fallback to regular API
         const response = await axios.post('/api/pathways-assign', {
           pathways: pathwaysData,
@@ -198,11 +194,11 @@ const PathwaysPage = () => {
     } catch (err: any) {
       console.error('API error:', err);
       message.error('Server error. Check network or try again later.');
-              setProgress(null);
-        setIsFreshClassification(false);
-      } finally {
-        setLoading(false);
-      }
+      setProgress(null);
+      setIsFreshClassification(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Function to refresh/reprocess the same data
@@ -212,8 +208,12 @@ const PathwaysPage = () => {
       return;
     }
     setIsFreshClassification(true);
-    console.log('Cache reset requested - fresh classification will be performed');
-    message.info('Re-processing the same data with fresh AI classification (cache cleared)...');
+    console.log(
+      'Cache reset requested - fresh classification will be performed'
+    );
+    message.info(
+      'Re-processing the same data with fresh AI classification (cache cleared)...'
+    );
     processDataWithCacheReset(originalData);
   };
 
@@ -373,10 +373,9 @@ const PathwaysPage = () => {
                   <div className='flex items-center gap-2'>
                     <ReloadOutlined className={loading ? 'animate-spin' : ''} />
                     <span>
-                      {isFreshClassification && loading 
-                        ? 'Fresh AI Classification...' 
-                        : 'Refresh AI Classification'
-                      }
+                      {isFreshClassification && loading
+                        ? 'Fresh AI Classification...'
+                        : 'Refresh AI Classification'}
                     </span>
                   </div>
                 </Button>
@@ -437,7 +436,9 @@ const PathwaysPage = () => {
                 </div>
                 <div className='text-center'>
                   <p className='text-base font-medium text-slate-800'>
-                    {isFreshClassification ? 'Fresh AI Classification...' : 'Processing with AI...'}
+                    {isFreshClassification
+                      ? 'Fresh AI Classification...'
+                      : 'Processing with AI...'}
                   </p>
                   {progress ? (
                     <div className='mt-3'>
@@ -445,13 +446,14 @@ const PathwaysPage = () => {
                         {progress.message}
                       </p>
                       <div className='w-full bg-gray-200 rounded-full h-2 mb-2'>
-                        <div 
+                        <div
                           className='bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-300'
                           style={{ width: `${progress.percentage}%` }}
                         ></div>
                       </div>
                       <p className='text-xs text-slate-500'>
-                        {progress.processed} of {progress.total} pathways processed ({progress.percentage}%)
+                        {progress.processed} of {progress.total} pathways
+                        processed ({progress.percentage}%)
                       </p>
                     </div>
                   ) : (

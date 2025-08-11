@@ -11,7 +11,10 @@ const openai = new OpenAI({
 });
 
 // Simple in-memory cache for pathway classifications
-const classificationCache = new Map<string, { class: string; subclass: string }>();
+const classificationCache = new Map<
+  string,
+  { class: string; subclass: string }
+>();
 
 interface PathwayRow {
   Pathway: string;
@@ -523,17 +526,25 @@ export default async function handler(
     // Process batches in chunks to avoid overwhelming the API
     let processedCount = 0;
     const totalPathways = others.length;
-    
+
     for (let i = 0; i < batches.length; i += concurrencyLimit) {
       const batchChunk = batches.slice(i, i + concurrencyLimit);
-      
-      console.log(`Processing batch ${Math.floor(i/concurrencyLimit) + 1}/${Math.ceil(batches.length/concurrencyLimit)} (${processedCount}/${totalPathways} pathways processed)`);
-      
+
+      console.log(
+        `Processing batch ${Math.floor(i / concurrencyLimit) + 1}/${Math.ceil(
+          batches.length / concurrencyLimit
+        )} (${processedCount}/${totalPathways} pathways processed)`
+      );
+
       const batchPromises = batchChunk.map(async (batch) => {
         // Check cache first and separate cached vs uncached pathways
         const uncachedPathways: PathwayRow[] = [];
-        const cachedResults: { pathway: string; classAssigned: string; subclassAssigned: string }[] = [];
-        
+        const cachedResults: {
+          pathway: string;
+          classAssigned: string;
+          subclassAssigned: string;
+        }[] = [];
+
         batch.forEach((row) => {
           const cached = classificationCache.get(row.Pathway);
           if (cached) {
@@ -560,7 +571,9 @@ export default async function handler(
         }
 
         // Process only uncached pathways
-        const batchPrompt = uncachedPathways.map((r) => `Pathway: ${r.Pathway}`).join('\n');
+        const batchPrompt = uncachedPathways
+          .map((r) => `Pathway: ${r.Pathway}`)
+          .join('\n');
 
         const userPrompt: Message = {
           role: 'user',
@@ -580,11 +593,11 @@ ${batchPrompt}`,
 
         try {
           console.log(`Processing batch of ${batch.length} pathways...`);
-          
+
           // Retry logic for API calls
           let retries = 3;
-          let response;
-          
+          let response: OpenAI.Chat.Completions.ChatCompletion;
+
           while (retries > 0) {
             try {
               response = await openai.chat.completions.create({
@@ -595,12 +608,17 @@ ${batchPrompt}`,
               break; // Success, exit retry loop
             } catch (apiError: any) {
               retries--;
-              console.error(`API call failed, retries left: ${retries}`, apiError.message);
+              console.error(
+                `API call failed, retries left: ${retries}`,
+                apiError.message
+              );
               if (retries === 0) {
                 throw apiError; // Re-throw if all retries exhausted
               }
               // Wait before retrying (exponential backoff)
-              await new Promise(resolve => setTimeout(resolve, (3 - retries) * 1000));
+              await new Promise((resolve) =>
+                setTimeout(resolve, (3 - retries) * 1000)
+              );
             }
           }
 
@@ -609,7 +627,8 @@ ${batchPrompt}`,
 
           const classifications = text.split('\n\n').map((block) => {
             const lines = block.trim().split('\n');
-            const pathwayLine = lines.find((l) => l.startsWith('Pathway:')) || '';
+            const pathwayLine =
+              lines.find((l) => l.startsWith('Pathway:')) || '';
             const classLine = lines.find((l) => l.startsWith('Class:')) || '';
             const subclassLine =
               lines.find((l) => l.startsWith('Subclass:')) || '';
@@ -628,7 +647,10 @@ ${batchPrompt}`,
 
           // Cache the new classifications
           classifications.forEach((classification) => {
-            if (classification.pathway && classification.classAssigned !== 'Unknown') {
+            if (
+              classification.pathway &&
+              classification.classAssigned !== 'Unknown'
+            ) {
               classificationCache.set(classification.pathway, {
                 class: classification.classAssigned,
                 subclass: classification.subclassAssigned,
@@ -648,7 +670,9 @@ ${batchPrompt}`,
 
             // If AI returned Unknown, try to classify based on pathway name
             if (classAssigned === 'Unknown' || subclassAssigned === 'Unknown') {
-              const fallbackClassification = classifyPathwayFallback(row.Pathway);
+              const fallbackClassification = classifyPathwayFallback(
+                row.Pathway
+              );
               classAssigned =
                 classAssigned === 'Unknown'
                   ? fallbackClassification.class
@@ -685,14 +709,18 @@ ${batchPrompt}`,
 
       // Wait for all batches in this chunk to complete
       const batchResults = await Promise.all(batchPromises);
-      
+
       // Flatten results and add to updatedOthers
-      batchResults.forEach(result => {
+      batchResults.forEach((result) => {
         updatedOthers.push(...result);
         processedCount += result.length;
       });
-      
-      console.log(`Completed batch ${Math.floor(i/concurrencyLimit) + 1}. Total processed: ${processedCount}/${totalPathways}`);
+
+      console.log(
+        `Completed batch ${
+          Math.floor(i / concurrencyLimit) + 1
+        }. Total processed: ${processedCount}/${totalPathways}`
+      );
     }
 
     const updatedReactome = reactomeRows.map((row) => ({

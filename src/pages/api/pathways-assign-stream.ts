@@ -12,7 +12,6 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-
 interface PathwayRow {
   Pathway: string;
   'Pathway Class': string | null;
@@ -124,7 +123,10 @@ function classifyPathwayFallback(pathwayName: string): {
     if (name.includes('adaptive') || name.includes('t cell')) {
       return { class: 'Immune System', subclass: 'Adaptive Immune System' };
     }
-    return { class: 'Immune System', subclass: 'Cytokine Signaling in Immune system' };
+    return {
+      class: 'Immune System',
+      subclass: 'Cytokine Signaling in Immune system',
+    };
   }
 
   // Gene expression patterns
@@ -134,7 +136,10 @@ function classifyPathwayFallback(pathwayName: string): {
     name.includes('splicing') ||
     name.includes('mrna')
   ) {
-    return { class: 'Gene expression (Transcription)', subclass: 'mRNA Splicing' };
+    return {
+      class: 'Gene expression (Transcription)',
+      subclass: 'mRNA Splicing',
+    };
   }
 
   // Cell cycle patterns
@@ -191,20 +196,24 @@ export default async function handler(
   const resetCache = req.body.resetCache || false; // New parameter to reset cache
 
   if (!Array.isArray(data) || data.length === 0) {
-    res.write(`data: ${JSON.stringify({ error: 'Invalid or empty pathways data' })}\n\n`);
+    res.write(
+      `data: ${JSON.stringify({ error: 'Invalid or empty pathways data' })}\n\n`
+    );
     res.end();
     return;
   }
 
   try {
     // Send initial progress
-    res.write(`data: ${JSON.stringify({ 
-      type: 'progress', 
-      message: 'Starting pathway classification...',
-      processed: 0,
-      total: data.length,
-      percentage: 0
-    })}\n\n`);
+    res.write(
+      `data: ${JSON.stringify({
+        type: 'progress',
+        message: 'Starting pathway classification...',
+        processed: 0,
+        total: data.length,
+        percentage: 0,
+      })}\n\n`
+    );
 
     const examples = data
       .filter(
@@ -316,21 +325,29 @@ export default async function handler(
     // Process batches in chunks
     for (let i = 0; i < batches.length; i += concurrencyLimit) {
       const batchChunk = batches.slice(i, i + concurrencyLimit);
-      
+
       // Send progress update
       const percentage = Math.round((processedCount / totalPathways) * 100);
-      res.write(`data: ${JSON.stringify({ 
-        type: 'progress', 
-        message: `Processing batch ${Math.floor(i/concurrencyLimit) + 1}/${Math.ceil(batches.length/concurrencyLimit)}`,
-        processed: processedCount,
-        total: totalPathways,
-        percentage
-      })}\n\n`);
-      
+      res.write(
+        `data: ${JSON.stringify({
+          type: 'progress',
+          message: `Processing batch ${
+            Math.floor(i / concurrencyLimit) + 1
+          }/${Math.ceil(batches.length / concurrencyLimit)}`,
+          processed: processedCount,
+          total: totalPathways,
+          percentage,
+        })}\n\n`
+      );
+
       const batchPromises = batchChunk.map(async (batch) => {
         // Check cache (persistent + memory) first and separate cached vs uncached pathways
         const uncachedPathways: PathwayRow[] = [];
-        const cachedResults: { pathway: string; classAssigned: string; subclassAssigned: string }[] = [];
+        const cachedResults: {
+          pathway: string;
+          classAssigned: string;
+          subclassAssigned: string;
+        }[] = [];
 
         const cacheLookup = resetCache
           ? {}
@@ -353,7 +370,9 @@ export default async function handler(
         if (uncachedPathways.length === 0) {
           // cachedResults contains all info we need, map back to row order
           return batch.map((row) => {
-            const cached = cachedResults.find((c) => c.pathway === row.Pathway)!;
+            const cached = cachedResults.find(
+              (c) => c.pathway === row.Pathway
+            )!;
             return {
               ...row,
               Pathway_Class_assigned: cached.classAssigned,
@@ -363,7 +382,9 @@ export default async function handler(
         }
 
         // Process only uncached pathways
-        const batchPrompt = uncachedPathways.map((r) => `Pathway: ${r.Pathway}`).join('\n');
+        const batchPrompt = uncachedPathways
+          .map((r) => `Pathway: ${r.Pathway}`)
+          .join('\n');
 
         const userPrompt: Message = {
           role: 'user',
@@ -384,8 +405,8 @@ ${batchPrompt}`,
         try {
           // Retry logic for API calls
           let retries = 3;
-          let response;
-          
+          let response: OpenAI.Chat.Completions.ChatCompletion;
+
           while (retries > 0) {
             try {
               response = await openai.chat.completions.create({
@@ -399,7 +420,9 @@ ${batchPrompt}`,
               if (retries === 0) {
                 throw apiError;
               }
-              await new Promise(resolve => setTimeout(resolve, (3 - retries) * 1000));
+              await new Promise((resolve) =>
+                setTimeout(resolve, (3 - retries) * 1000)
+              );
             }
           }
 
@@ -407,13 +430,21 @@ ${batchPrompt}`,
 
           const classifications = text.split('\n\n').map((block) => {
             const lines = block.trim().split('\n');
-            const pathwayLine = lines.find((l) => l.startsWith('Pathway:')) || '';
+            const pathwayLine =
+              lines.find((l) => l.startsWith('Pathway:')) || '';
             const classLine = lines.find((l) => l.startsWith('Class:')) || '';
-            const subclassLine = lines.find((l) => l.startsWith('Subclass:')) || '';
+            const subclassLine =
+              lines.find((l) => l.startsWith('Subclass:')) || '';
             return {
-              pathway: pathwayLine ? pathwayLine.replace('Pathway:', '').trim() : '',
-              classAssigned: classLine ? classLine.replace('Class:', '').trim() || 'Unknown' : 'Unknown',
-              subclassAssigned: subclassLine ? subclassLine.replace('Subclass:', '').trim() || 'Unknown' : 'Unknown',
+              pathway: pathwayLine
+                ? pathwayLine.replace('Pathway:', '').trim()
+                : '',
+              classAssigned: classLine
+                ? classLine.replace('Class:', '').trim() || 'Unknown'
+                : 'Unknown',
+              subclassAssigned: subclassLine
+                ? subclassLine.replace('Subclass:', '').trim() || 'Unknown'
+                : 'Unknown',
             };
           });
 
@@ -421,7 +452,8 @@ ${batchPrompt}`,
           await classificationCache.setMany(
             classifications
               .filter(
-                (c) => c.pathway && c.classAssigned && c.classAssigned !== 'Unknown'
+                (c) =>
+                  c.pathway && c.classAssigned && c.classAssigned !== 'Unknown'
               )
               .map((c) => ({
                 pathwayName: c.pathway,
@@ -445,9 +477,13 @@ ${batchPrompt}`,
             let subclassAssigned = match?.subclassAssigned ?? 'Unknown';
 
             if (classAssigned === 'Unknown' || subclassAssigned === 'Unknown') {
-              const fallbackClassification = classifyPathwayFallback(row.Pathway);
+              const fallbackClassification = classifyPathwayFallback(
+                row.Pathway
+              );
               classAssigned =
-                classAssigned === 'Unknown' ? fallbackClassification.class : classAssigned;
+                classAssigned === 'Unknown'
+                  ? fallbackClassification.class
+                  : classAssigned;
               subclassAssigned =
                 subclassAssigned === 'Unknown'
                   ? fallbackClassification.subclass
@@ -483,8 +519,8 @@ ${batchPrompt}`,
       });
 
       const batchResults = await Promise.all(batchPromises);
-      
-      batchResults.forEach(result => {
+
+      batchResults.forEach((result) => {
         updatedOthers.push(...result);
         processedCount += result.length;
       });
@@ -511,23 +547,30 @@ ${batchPrompt}`,
       'Subclass_assigned',
     ];
 
-    const tsv = headers.join('\t') + '\n' + finalData
-      .map((row) => headers.map((h) => (row as any)[h] ?? '').join('\t'))
-      .join('\n');
+    const tsv =
+      headers.join('\t') +
+      '\n' +
+      finalData
+        .map((row) => headers.map((h) => (row as any)[h] ?? '').join('\t'))
+        .join('\n');
 
     // Send final results
-    res.write(`data: ${JSON.stringify({ 
-      type: 'complete', 
-      preview: finalData,
-      tsv,
-      processingTime: processingTimeSeconds,
-      totalPathways: finalData.length
-    })}\n\n`);
+    res.write(
+      `data: ${JSON.stringify({
+        type: 'complete',
+        preview: finalData,
+        tsv,
+        processingTime: processingTimeSeconds,
+        totalPathways: finalData.length,
+      })}\n\n`
+    );
 
     res.end();
   } catch (error) {
     console.error('Unexpected API error:', error);
-    res.write(`data: ${JSON.stringify({ error: 'Internal Server Error' })}\n\n`);
+    res.write(
+      `data: ${JSON.stringify({ error: 'Internal Server Error' })}\n\n`
+    );
     res.end();
   }
 }
