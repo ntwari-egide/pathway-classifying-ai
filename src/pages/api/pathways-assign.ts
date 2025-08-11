@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
+import { classificationCache } from '@/lib/cache';
 
 type Message = {
   role: 'system' | 'user' | 'assistant';
@@ -10,11 +11,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Simple in-memory cache for pathway classifications
-const classificationCache = new Map<
-  string,
-  { class: string; subclass: string }
->();
+// Persistent + in-memory cache handled in '@/lib/cache'
 
 interface PathwayRow {
   Pathway: string;
@@ -507,10 +504,10 @@ export default async function handler(
     const reactomeRows = data.filter((r) => r.Source === 'Reactome');
     const others = data.filter((r) => r.Source !== 'Reactome');
 
-    // Reset cache if requested
+    // Reset cache if requested (only clear in-memory; bypass reads below)
     if (resetCache) {
-      classificationCache.clear();
-      console.log('Cache cleared for fresh classification');
+      classificationCache.clearMemory();
+      console.log('In-memory cache cleared for fresh classification');
     }
 
     const batchSize = 100; // Increased batch size for better efficiency
@@ -537,7 +534,7 @@ export default async function handler(
       );
 
       const batchPromises = batchChunk.map(async (batch) => {
-        // Check cache first and separate cached vs uncached pathways
+        // Check cache (persistent + memory) first and separate cached vs uncached pathways
         const uncachedPathways: PathwayRow[] = [];
         const cachedResults: {
           pathway: string;
@@ -545,13 +542,17 @@ export default async function handler(
           subclassAssigned: string;
         }[] = [];
 
+        const cacheLookup = resetCache
+          ? {}
+          : await classificationCache.getMany(batch.map((b) => b.Pathway));
+
         batch.forEach((row) => {
-          const cached = classificationCache.get(row.Pathway);
-          if (cached) {
+          const hit = (cacheLookup as Record<string, { class: string; subclass: string } | undefined>)[row.Pathway];
+          if (hit) {
             cachedResults.push({
               pathway: row.Pathway,
-              classAssigned: cached.class,
-              subclassAssigned: cached.subclass,
+              classAssigned: hit.class,
+              subclassAssigned: hit.subclass,
             });
           } else {
             uncachedPathways.push(row);
@@ -561,11 +562,11 @@ export default async function handler(
         // If all pathways are cached, return cached results
         if (uncachedPathways.length === 0) {
           return batch.map((row) => {
-            const cached = classificationCache.get(row.Pathway)!;
+            const cached = cachedResults.find((c) => c.pathway === row.Pathway)!;
             return {
               ...row,
-              Pathway_Class_assigned: cached.class,
-              Subclass_assigned: cached.subclass,
+              Pathway_Class_assigned: cached.classAssigned,
+              Subclass_assigned: cached.subclassAssigned,
             };
           });
         }
@@ -645,23 +646,28 @@ ${batchPrompt}`,
             };
           });
 
-          // Cache the new classifications
-          classifications.forEach((classification) => {
-            if (
-              classification.pathway &&
-              classification.classAssigned !== 'Unknown'
-            ) {
-              classificationCache.set(classification.pathway, {
-                class: classification.classAssigned,
-                subclass: classification.subclassAssigned,
-              });
-            }
-          });
+          // Cache the new classifications (persist to Redis)
+          await classificationCache.setMany(
+            classifications
+              .filter(
+                (c) => c.pathway && c.classAssigned && c.classAssigned !== 'Unknown'
+              )
+              .map((c) => ({
+                pathwayName: c.pathway,
+                value: { class: c.classAssigned, subclass: c.subclassAssigned },
+              }))
+          );
 
           // Combine cached and new results
           const allResults = [...cachedResults, ...classifications];
 
-          return batch.map((row) => {
+          const resultRows: (PathwayRow & {
+            Pathway_Class_assigned: string;
+            Subclass_assigned: string;
+          })[] = [];
+          const writePromises: Promise<void>[] = [];
+
+          for (const row of batch) {
             const match = allResults.find((c) => c.pathway === row.Pathway);
 
             // Fallback classification logic if AI returns Unknown or no match
@@ -670,33 +676,32 @@ ${batchPrompt}`,
 
             // If AI returned Unknown, try to classify based on pathway name
             if (classAssigned === 'Unknown' || subclassAssigned === 'Unknown') {
-              const fallbackClassification = classifyPathwayFallback(
-                row.Pathway
-              );
+              const fallbackClassification = classifyPathwayFallback(row.Pathway);
               classAssigned =
-                classAssigned === 'Unknown'
-                  ? fallbackClassification.class
-                  : classAssigned;
+                classAssigned === 'Unknown' ? fallbackClassification.class : classAssigned;
               subclassAssigned =
-                subclassAssigned === 'Unknown'
-                  ? fallbackClassification.subclass
-                  : subclassAssigned;
+                subclassAssigned === 'Unknown' ? fallbackClassification.subclass : subclassAssigned;
             }
 
             // Cache fallback results too
             if (classAssigned !== 'Unknown' && subclassAssigned !== 'Unknown') {
-              classificationCache.set(row.Pathway, {
-                class: classAssigned,
-                subclass: subclassAssigned,
-              });
+              writePromises.push(
+                classificationCache.set(row.Pathway, {
+                  class: classAssigned,
+                  subclass: subclassAssigned,
+                })
+              );
             }
 
-            return {
+            resultRows.push({
               ...row,
               Pathway_Class_assigned: classAssigned,
               Subclass_assigned: subclassAssigned,
-            };
-          });
+            });
+          }
+
+          await Promise.all(writePromises);
+          return resultRows;
         } catch (err) {
           console.error('OpenAI batch error:', err);
           return batch.map((row) => ({
