@@ -51,6 +51,7 @@
     "nodemailer-dkim": "^1.0.5",
     "npm": "^10.8.1",
     "openai": "^4.47.3",
+    "redis": "^4.6.13",
     "openai-edge": "^1.2.2",
     "papaparse": "^5.5.3",
     "pdf-lib": "^1.17.1",
