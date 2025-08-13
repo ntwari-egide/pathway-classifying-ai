@@ -169,11 +169,6 @@ const PathwaysPage = () => {
                   const url = URL.createObjectURL(blob);
                   setDownloadUrl(url);
 
-                  setProcessingTime(data.processingTime || '');
-                  setTotalPathways(data.totalPathways || 0);
-                  setCurrentPage(1);
-                  setProgress(null);
-                  setIsFreshClassification(false);
                 } else if (data.error) {
                   message.error(data.error);
                   setProgress(null);
