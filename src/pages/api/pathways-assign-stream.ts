@@ -29,149 +29,39 @@ function batchArray<T>(arr: T[], size: number): T[][] {
   return batches;
 }
 
-// Fallback classification function using EXACT Reactome terminology
-function classifyPathwayFallback(pathwayName: string): {
+// Simplified fallback classification function - minimal logic to avoid errors
+function classifyPathwayFallback(pathwayName: string, species: string): {
   class: string;
   subclass: string;
 } {
   const name = pathwayName.toLowerCase();
-
-  // Metabolism patterns (using exact Reactome names with proper subclasses)
+  
+  // Very basic fallback - let AI handle the complex species-specific logic
   if (name.includes('metabolism') || name.includes('metabolic')) {
-    if (name.includes('amino acid') || name.includes('serine')) {
-      return {
-        class: 'Metabolism',
-        subclass: 'Metabolism of amino acids and derivatives',
-      };
-    }
-    if (name.includes('rna') || name.includes('splicing')) {
-      return { class: 'Metabolism', subclass: 'Metabolism of RNA' };
-    }
     return { class: 'Metabolism', subclass: 'Metabolism of proteins' };
   }
-
-  // Drug/Biotransformation patterns (using exact Reactome names)
-  if (
-    name.includes('biotransformation') ||
-    name.includes('acrylamide') ||
-    name.includes('exposure') ||
-    name.includes('biomarker')
-  ) {
-    return { class: 'Drug ADME', subclass: 'Xenobiotic metabolism' };
-  }
-
-  // Signaling patterns (using exact Reactome names)
   if (name.includes('signaling') || name.includes('signal')) {
-    if (name.includes('erbb') || name.includes('erb')) {
-      return { class: 'Signal Transduction', subclass: 'Signaling by ERBB4' };
-    }
-    if (
-      name.includes('akt') ||
-      name.includes('pi3k') ||
-      name.includes('pip3')
-    ) {
-      return {
-        class: 'Signal Transduction',
-        subclass: 'PIP3 activates AKT signaling',
-      };
-    }
-    if (name.includes('tgf') || name.includes('smad')) {
-      return {
-        class: 'Signal Transduction',
-        subclass: 'Signaling by TGF-beta Receptor Complex',
-      };
-    }
-    if (
-      name.includes('rho') ||
-      name.includes('rac') ||
-      name.includes('gtpase')
-    ) {
-      return {
-        class: 'Signal Transduction',
-        subclass: 'Signaling by Rho GTPases',
-      };
-    }
-    if (
-      name.includes('mapk') ||
-      name.includes('raf') ||
-      name.includes('kinase')
-    ) {
-      return {
-        class: 'Signal Transduction',
-        subclass: 'MAPK family signaling cascades',
-      };
-    }
-    if (name.includes('met') || name.includes('receptor tyrosine')) {
-      return {
-        class: 'Signal Transduction',
-        subclass: 'Signaling by Receptor Tyrosine Kinases',
-      };
-    }
-    return {
-      class: 'Signal Transduction',
-      subclass: 'Intracellular signaling by second messengers',
-    };
+    return { class: 'Signal Transduction', subclass: 'Intracellular signaling by second messengers' };
   }
-
-  // Immune system patterns
-  if (
-    name.includes('immune') ||
-    name.includes('tcr') ||
-    name.includes('mhc') ||
-    name.includes('antigen')
-  ) {
-    if (name.includes('adaptive') || name.includes('t cell')) {
-      return { class: 'Immune System', subclass: 'Adaptive Immune System' };
-    }
-    return {
-      class: 'Immune System',
-      subclass: 'Cytokine Signaling in Immune system',
-    };
+  if (name.includes('immune')) {
+    return { class: 'Immune System', subclass: 'Innate Immune System' };
   }
-
-  // Gene expression patterns
-  if (
-    name.includes('transcription') ||
-    name.includes('rna') ||
-    name.includes('splicing') ||
-    name.includes('mrna')
-  ) {
-    return {
-      class: 'Gene expression (Transcription)',
-      subclass: 'mRNA Splicing',
-    };
+  if (name.includes('transcription') || name.includes('rna')) {
+    return { class: 'Gene expression (Transcription)', subclass: 'RNA Polymerase II Transcription' };
   }
-
-  // Cell cycle patterns
-  if (name.includes('cell cycle') || name.includes('mitosis')) {
+  if (name.includes('neuron') || name.includes('synapse')) {
+    return { class: 'Neuronal System', subclass: 'Transmission across Chemical Synapses' };
+  }
+  if (name.includes('development')) {
+    return { class: 'Developmental Biology', subclass: 'Nervous system development' };
+  }
+  if (name.includes('cell cycle')) {
     return { class: 'Cell Cycle', subclass: 'Mitotic Cell Cycle' };
   }
-
-  // Neuronal system patterns
-  if (
-    name.includes('neuron') ||
-    name.includes('synapse') ||
-    name.includes('neurotransmitter')
-  ) {
-    return {
-      class: 'Neuronal System',
-      subclass: 'Transmission across Chemical Synapses',
-    };
-  }
-
-  // Cell communication patterns
-  if (name.includes('cell-cell') || name.includes('adherens')) {
-    return {
-      class: 'Cell-Cell communication',
-      subclass: 'Adherens junctions interactions',
-    };
-  }
-
-  // Programmed cell death patterns
   if (name.includes('apoptosis') || name.includes('death')) {
     return { class: 'Programmed Cell Death', subclass: 'Apoptosis' };
   }
-
+  
   // Default fallback
   return { class: 'Metabolism', subclass: 'Metabolism of proteins' };
 }
@@ -228,68 +118,114 @@ export default async function handler(
       }));
 
     const systemPrompt = `
-      You are a biomedical expert classifying human biological pathways using EXACT Reactome terminology.
+      You are a biomedical expert classifying biological pathways using EXACT Reactome terminology. You MUST consider the SPECIES of each pathway when making classifications.
 
       REQUIREMENTS:
       - Use ONLY exact Reactome pathway names
       - Assign BOTH class AND subclass for every pathway
       - Never use "Unknown" or "N/A" for subclasses
+      - ALWAYS consider the SPECIES when classifying pathways
+      - Different species may have different pathway classifications due to evolutionary differences
+
+      SPECIES-SPECIFIC CONSIDERATIONS:
+      - Human (Homo sapiens): Standard Reactome classifications, most comprehensive, full pathway complexity
+      - Mouse (Mus musculus): Similar to human, full pathway complexity, mammalian systems
+      - Arabidopsis thaliana (Plant): Plant-specific pathways, photosynthesis, plant hormones, no animal systems
+      - Caenorhabditis elegans (Nematode): Simple nervous system, developmental biology, basic animal systems
+      - Drosophila melanogaster (Fruit fly): Developmental biology, innate immunity only, no adaptive immunity
+      - Dictyostelium discoideum (Amoeba): Simple eukaryote, basic metabolism, developmental processes
+      - Trichoplax adhaerens (Placozoa): Simple animal, basic cell processes, no complex systems
+      - Monosiga brevicollis (Choanoflagellate): Single-celled eukaryote, basic metabolism, no complex systems
+      - Saccharomyces cerevisiae (Yeast): Simple eukaryote, basic metabolism and cell cycle, no complex systems
+      - Plasmodium falciparum (Parasite): Apicomplexan parasite, specialized metabolism, no complex animal systems
+      - Synechocystis sp. (Cyanobacteria): Photosynthetic bacteria, basic metabolism, no complex systems
+      - Escherichia coli (Bacteria): Prokaryote, basic metabolism, no complex signaling or immune systems
+      - Pseudomonas aeruginosa (Bacteria): Prokaryote, basic metabolism, no complex systems
+      - Klebsiella pneumoniae (Bacteria): Prokaryote, basic metabolism, no complex systems
+      - Mycobacterium tuberculosis (Bacteria): Prokaryote, specialized metabolism, no complex systems
+      - Bacillus subtilis (Bacteria): Prokaryote, basic metabolism, no complex systems
+      - Staphylococcus aureus (Bacteria): Prokaryote, basic metabolism, no complex systems
+      - Methanocaldococcus jannaschii (Archaea): Extremophile archaea, basic metabolism, no complex systems
 
       HIERARCHY: Class (top-level) → Subclass (intermediate) → Pathway (specific)
 
       MAJOR CLASSES: Metabolism, Signal Transduction, Gene expression (Transcription), Immune System, Cell Cycle, Developmental Biology, Neuronal System, DNA Replication, DNA Repair, Cell-Cell communication, Transport of small molecules, Vesicle-mediated transport, Programmed Cell Death, Autophagy, Chromatin organization, Protein localization, Cellular responses to stimuli, Hemostasis, Muscle contraction, Organelle biogenesis and maintenance, Sensory Perception, Drug ADME, Digestion and absorption, Extracellular matrix organization
 
-      COMMON SUBCLASSES:
+      SPECIES-ADAPTED SUBCLASSES:
+      
+      **Homo sapiens & Mus musculus (Mammals):**
       - Metabolism: "Metabolism of proteins", "Metabolism of RNA", "Metabolism of amino acids and derivatives"
-      - Signal Transduction: "Signaling by Receptor Tyrosine Kinases", "MAPK family signaling cascades", "Signaling by Rho GTPases", "Intracellular signaling by second messengers"
+      - Signal Transduction: "Signaling by Receptor Tyrosine Kinases", "MAPK family signaling cascades", "Signaling by Rho GTPases"
       - Immune System: "Adaptive Immune System", "Cytokine Signaling in Immune system", "Innate Immune System"
-      - Gene Expression: "RNA Polymerase II Transcription", "Processing of Capped Intron-Containing Pre-mRNA", "mRNA Splicing"
       - Neuronal System: "Transmission across Chemical Synapses", "Neurotransmitter receptors and postsynaptic signal transmission"
-      - Cell-Cell Communication: "Cell junction organization", "Adherens junctions interactions", "Gap junction trafficking"
-      - Programmed Cell Death: "Apoptosis", "Necroptosis", "Autophagy"
-      - Drug ADME: "Xenobiotic metabolism", "Drug metabolism", "Phase I - Functionalization of compounds"
-      - Developmental Biology: "Nervous system development", "Axon guidance", "Semaphorin interactions"
-      - Extracellular Matrix: "Collagen formation", "Collagen biosynthesis and modifying enzymes", "Assembly of collagen fibrils and other multimeric structures"
-      - Generic Transcription Pathway
-      - Transcriptional activity of SMAD2/SMAD3:SMAD4 heterotrimer
-      - Visual phototransduction
-      - The phototransduction cascade
-      - Inactivation, recovery and regulation of the phototransduction cascade
-      - Negative regulation of the PI3K/AKT network
-      - Semaphorin interactions
-      - Sema4D in semaphorin signaling
-      - Sema4D mediated inhibition of cell attachment and migration
-      - Axon guidance
-      - RAF/MAP kinase cascade
-      - MAPK family signaling cascades
-      - MAPK1/MAPK3 signaling
-      - Signaling by MET
-      - MET Receptor Activation
-      - Negative regulation of MET activity
-      - PI5P, PP2A and IER3 Regulate PI3K/AKT Signaling
-      - MET activates RAS signaling
-      - MET activates PI3K/AKT signaling
-      - MET activates PTPN11
-      - MET activates PTK2 signaling
-      - MET interacts with TNS proteins
-      - MET activates RAP1 and RAC1
-      - MET receptor recycling
-      - MET activates STAT3
-      - MET promotes cell motility
-      - Intracellular signaling by second messengers
-      - Signaling by Receptor Tyrosine Kinases
-      - Nervous system development
-      - Drug-mediated inhibition of MET activation
-      - Neurotransmitter receptors and postsynaptic signal transmission
-      - Transmission across Chemical Synapses
-      - Nephrin family interactions
+      
+      **Arabidopsis thaliana (Plant):**
+      - Metabolism: "Metabolism of proteins", "Metabolism of RNA", "Photosynthesis", "Plant hormone metabolism"
+      - Developmental Biology: "Plant development", "Response to hormones", "Seed development"
+      - No immune system or neuronal pathways (different stress responses)
+      
+      **Caenorhabditis elegans (Nematode):**
+      - Developmental Biology: "Nervous system development", "Axon guidance", "Embryonic development"
+      - Neuronal System: "Transmission across Chemical Synapses" (simple nervous system)
+      - Metabolism: "Metabolism of proteins", "Metabolism of RNA"
+      - No complex immune system (basic innate responses)
+      
+      **Drosophila melanogaster (Fruit fly):**
+      - Developmental Biology: "Nervous system development", "Axon guidance", "Pattern formation"
+      - Immune System: "Innate Immune System", "Antimicrobial response" (no adaptive immunity)
+      - Metabolism: "Metabolism of proteins", "Metabolism of RNA"
+      - No complex adaptive immune pathways
+      
+      **Dictyostelium discoideum (Amoeba):**
+      - Metabolism: "Metabolism of proteins", "Metabolism of RNA", "Carbohydrate metabolism"
+      - Developmental Biology: "Cell differentiation", "Multicellular development"
+      - No complex immune or neuronal systems
+      
+      **Trichoplax adhaerens (Placozoa):**
+      - Metabolism: "Metabolism of proteins", "Metabolism of RNA"
+      - Basic cell processes, no complex systems
+      - No immune, neuronal, or developmental pathways
+      
+      **Monosiga brevicollis (Choanoflagellate):**
+      - Metabolism: "Metabolism of proteins", "Metabolism of RNA"
+      - Single-celled organism, no multicellular systems
+      - No complex immune, neuronal, or developmental pathways
+      
+      **Saccharomyces cerevisiae (Yeast):**
+      - Metabolism: "Metabolism of proteins", "Metabolism of RNA", "Carbohydrate metabolism"
+      - Cell Cycle: "Mitotic Cell Cycle", "Cell cycle checkpoints"
+      - No complex immune system or neuronal pathways
+      
+      **Plasmodium falciparum (Parasite):**
+      - Metabolism: "Metabolism of proteins", "Metabolism of RNA", "Parasite-specific metabolism"
+      - No complex immune, neuronal, or developmental pathways
+      - Specialized for parasitic lifestyle
+      
+      **Synechocystis sp. (Cyanobacteria):**
+      - Metabolism: "Metabolism of proteins", "Metabolism of RNA", "Photosynthesis"
+      - No complex systems, basic prokaryote metabolism
+      
+      **Escherichia coli, Pseudomonas aeruginosa, Klebsiella pneumoniae, Mycobacterium tuberculosis, Bacillus subtilis, Staphylococcus aureus (Bacteria):**
+      - Metabolism: "Metabolism of proteins", "Metabolism of RNA", "Carbohydrate metabolism"
+      - No complex signaling, immune system, or neuronal pathways
+      - Basic cell cycle and DNA processes
+      
+      **Methanocaldococcus jannaschii (Archaea):**
+      - Metabolism: "Metabolism of proteins", "Metabolism of RNA", "Methanogenesis"
+      - Extremophile adaptations, no complex systems
 
       RESPONSE FORMAT:
       Pathway: <pathway name>
+      Species: <species name>
       Class: <exact Reactome class name>
       Subclass: <exact Reactome subclass name>
 
-      RULES: Always assign both class and subclass. Use biological logic to choose the best fit subclass.
+      RULES: 
+      - Always assign both class and subclass
+      - Consider species when choosing classifications
+      - Use biological logic to choose the best fit subclass
+      - Adapt classifications based on species complexity and evolutionary distance from human
+      - Mammals have full pathway complexity, plants have plant-specific pathways, bacteria/archaea have basic metabolism only
     `;
 
     const messages: Message[] = [{ role: 'system', content: systemPrompt }];
@@ -380,15 +316,30 @@ export default async function handler(
 
         const userPrompt: Message = {
           role: 'user',
-          content: `Classify the following pathways. You MUST provide BOTH class and subclass for each pathway - never leave subclass empty or as N/A.
+          content: `Classify the following pathways considering their SPECIES. You MUST provide BOTH class and subclass for each pathway - never leave subclass empty or as N/A.
+
+          IMPORTANT: Consider the species when classifying. Different species have different pathway complexities:
+          - Mammals (Homo sapiens, Mus musculus): Full pathway complexity including adaptive immunity, complex signaling, and neuronal systems
+          - Plants (Arabidopsis thaliana): Plant-specific pathways including photosynthesis, no animal systems
+          - Nematodes (Caenorhabditis elegans): Simple nervous system, basic animal systems, no complex immunity
+          - Insects (Drosophila melanogaster): Developmental biology, innate immunity only, no adaptive immunity
+          - Amoeba (Dictyostelium discoideum): Simple eukaryote, basic metabolism, developmental processes
+          - Placozoa (Trichoplax adhaerens): Simple animal, basic cell processes, no complex systems
+          - Choanoflagellates (Monosiga brevicollis): Single-celled eukaryote, basic metabolism, no complex systems
+          - Yeast (Saccharomyces cerevisiae): Basic eukaryote, no complex systems
+          - Parasites (Plasmodium falciparum): Specialized metabolism, no complex animal systems
+          - Cyanobacteria (Synechocystis sp.): Photosynthetic bacteria, basic metabolism, no complex systems
+          - Bacteria (E. coli, P. aeruginosa, K. pneumoniae, M. tuberculosis, B. subtilis, S. aureus): Prokaryotes, basic metabolism only, no complex systems
+          - Archaea (Methanocaldococcus jannaschii): Extremophile, basic metabolism, no complex systems
 
           Provide results in this exact format for each pathway:
 
           Pathway: <pathway name>
+          Species: <species name>
           Class: <exact Reactome class name>
           Subclass: <exact Reactome subclass name - REQUIRED>
 
-          REMEMBER: Every pathway needs both a class AND a meaningful subclass based on the hierarchical examples provided.
+          REMEMBER: Every pathway needs both a class AND a meaningful subclass based on the species and hierarchical examples provided.
 
           Pathways:
           ${batchPrompt}`,
@@ -424,6 +375,8 @@ export default async function handler(
             const lines = block.trim().split('\n');
             const pathwayLine =
               lines.find((l) => l.startsWith('Pathway:')) || '';
+            const speciesLine =
+              lines.find((l) => l.startsWith('Species:')) || '';
             const classLine = lines.find((l) => l.startsWith('Class:')) || '';
             const subclassLine =
               lines.find((l) => l.startsWith('Subclass:')) || '';
@@ -431,6 +384,9 @@ export default async function handler(
               pathway: pathwayLine
                 ? pathwayLine.replace('Pathway:', '').trim()
                 : '',
+              species: speciesLine
+                ? speciesLine.replace('Species:', '').trim() || 'Unknown'
+                : 'Unknown',
               classAssigned: classLine
                 ? classLine.replace('Class:', '').trim() || 'Unknown'
                 : 'Unknown',
@@ -470,7 +426,7 @@ export default async function handler(
 
             if (classAssigned === 'Unknown' || subclassAssigned === 'Unknown') {
               const fallbackClassification = classifyPathwayFallback(
-                row.Pathway
+                row.Pathway, row.Species
               );
               classAssigned =
                 classAssigned === 'Unknown'
