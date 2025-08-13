@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
+
 import { classificationCache } from '@/lib/cache';
 
 type Message = {
@@ -371,7 +372,7 @@ export default async function handler(
       }));
 
     const systemPrompt = `
-      You are a biomedical expert classifying human biological pathways using EXACT Reactome terminology.
+      You are a biomedical expert classifying biological pathways using EXACT Reactome terminology.
 
       REQUIREMENTS:
       - Use ONLY exact Reactome pathway names
@@ -483,14 +484,6 @@ export default async function handler(
       - Class: "Extracellular matrix organization"
       - Subclasses: "Collagen formation", "Collagen biosynthesis and modifying enzymes", "Assembly of collagen fibrils and other multimeric structures"
 
-      EXAMPLES:
-      ${examples
-        .map(
-          (e) =>
-            `Pathway: ${e.pathway}\nClass: ${e.class}\nSubclass: ${e.subclass}`
-        )
-        .join('\n\n')}
-
       RESPONSE FORMAT:
       Pathway: <pathway name>
       Class: <exact Reactome class name>
@@ -547,7 +540,12 @@ export default async function handler(
           : await classificationCache.getMany(batch.map((b) => b.Pathway));
 
         batch.forEach((row) => {
-          const hit = (cacheLookup as Record<string, { class: string; subclass: string } | undefined>)[row.Pathway];
+          const hit = (
+            cacheLookup as Record<
+              string,
+              { class: string; subclass: string } | undefined
+            >
+          )[row.Pathway];
           if (hit) {
             cachedResults.push({
               pathway: row.Pathway,
@@ -562,7 +560,9 @@ export default async function handler(
         // If all pathways are cached, return cached results
         if (uncachedPathways.length === 0) {
           return batch.map((row) => {
-            const cached = cachedResults.find((c) => c.pathway === row.Pathway)!;
+            const cached = cachedResults.find(
+              (c) => c.pathway === row.Pathway
+            )!;
             return {
               ...row,
               Pathway_Class_assigned: cached.classAssigned,
@@ -580,16 +580,16 @@ export default async function handler(
           role: 'user',
           content: `Classify the following pathways. You MUST provide BOTH class and subclass for each pathway - never leave subclass empty or as N/A.
 
-Provide results in this exact format for each pathway:
+                    Provide results in this exact format for each pathway:
 
-Pathway: <pathway name>
-Class: <exact Reactome class name>
-Subclass: <exact Reactome subclass name - REQUIRED>
+                    Pathway: <pathway name>
+                    Class: <exact Reactome class name>
+                    Subclass: <exact Reactome subclass name - REQUIRED>
 
-REMEMBER: Every pathway needs both a class AND a meaningful subclass based on the hierarchical examples provided.
+                    REMEMBER: Every pathway needs both a class AND a meaningful subclass based on the hierarchical examples provided.
 
-Pathways:
-${batchPrompt}`,
+                    Pathways:
+                    ${batchPrompt}`,
         };
 
         try {
@@ -650,7 +650,8 @@ ${batchPrompt}`,
           await classificationCache.setMany(
             classifications
               .filter(
-                (c) => c.pathway && c.classAssigned && c.classAssigned !== 'Unknown'
+                (c) =>
+                  c.pathway && c.classAssigned && c.classAssigned !== 'Unknown'
               )
               .map((c) => ({
                 pathwayName: c.pathway,
@@ -676,11 +677,17 @@ ${batchPrompt}`,
 
             // If AI returned Unknown, try to classify based on pathway name
             if (classAssigned === 'Unknown' || subclassAssigned === 'Unknown') {
-              const fallbackClassification = classifyPathwayFallback(row.Pathway);
+              const fallbackClassification = classifyPathwayFallback(
+                row.Pathway
+              );
               classAssigned =
-                classAssigned === 'Unknown' ? fallbackClassification.class : classAssigned;
+                classAssigned === 'Unknown'
+                  ? fallbackClassification.class
+                  : classAssigned;
               subclassAssigned =
-                subclassAssigned === 'Unknown' ? fallbackClassification.subclass : subclassAssigned;
+                subclassAssigned === 'Unknown'
+                  ? fallbackClassification.subclass
+                  : subclassAssigned;
             }
 
             // Cache fallback results too
