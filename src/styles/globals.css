@@ -1,0 +1,305 @@
+/**
+  * This file is used to define global styles for the application.
+  * It is imported in _app.js and is therefore applied to all pages.
+  * It is also used to define Tailwind CSS classes and components.
+  */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Global font inheritance */
+* {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+html {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+body {
+  font-family: 'Inter Tight', sans-serif !important;
+  background-color: white;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+/* Ant Design Components */
+.ant-btn {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-input {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-input-search {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-table {
+  font-family: 'Inter Tight', sans-serif !important;
+  font-size: 14px !important;
+}
+
+.ant-table .ant-table-thead > tr > th {
+  font-family: 'Inter Tight', sans-serif !important;
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+}
+
+.ant-table .ant-table-tbody > tr > td {
+  font-family: 'Inter Tight', sans-serif !important;
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+}
+
+.ant-pagination {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-pagination .ant-pagination-item {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-pagination .ant-pagination-item a {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-spin {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-spin-text {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-upload {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-upload-text {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-typography {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-typography h1,
+.ant-typography h2,
+.ant-typography h3,
+.ant-typography h4,
+.ant-typography h5,
+.ant-typography h6 {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-typography p {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+/* Additional components that might need font override */
+.ant-menu {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-menu-item {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-dropdown {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-select {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-select-selector {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-message {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-notification {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-modal {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-modal-title {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.ant-modal-content {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+/* Ensure all text elements inherit the font */
+span,
+div,
+p,
+a,
+button,
+input,
+textarea,
+select,
+label {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+/* Specific header styling */
+.main-header {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+.main-header h1 {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+/* Force font on all elements */
+* {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+/* Additional force for Inter Tight */
+.font-inter-tight {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+/* Override any conflicting styles */
+body,
+html,
+#__next,
+#__next > div {
+  font-family: 'Inter Tight', sans-serif !important;
+}
+
+h1 {
+  color: #09090d;
+}
+
+p {
+  font-size: 15px;
+  font-weight: normal !important;
+}
+
+.ant-layout-sider-trigger {
+  background-color: #263238 !important;
+}
+
+li.ant-menu-item.ant-menu-item-selected {
+  background: transparent;
+  border-radius: 0 !important;
+  border-left: 1px solid white;
+}
+
+.ant-menu-light.ant-menu-horizontal > .ant-menu-item-selected::after {
+  border-bottom-width: 2px;
+  border-bottom-color: #269796 !important;
+}
+
+.ant-menu-light.ant-menu-horizontal > .ant-menu-item-selected svg {
+  color: #269796 !important;
+}
+
+.ant-menu-light.ant-menu-horizontal > .ant-menu-item-selected span {
+  color: black !important;
+}
+
+.ant-menu-light.ant-menu-horizontal > .ant-menu-item:hover::after {
+  border-bottom-width: 2px;
+  border-bottom-color: transparent !important;
+}
+
+.ant-select-selector {
+  border-radius: 100px !important;
+}
+
+aside.ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger.h-\[90vh\].bg-\[\#29404F\] {
+  position: sticky;
+  top: 8vh;
+}
+
+header.ant-layout-header.flex.justify-between.bg-white.py-2.border-b.border-b-\[\#E9EAEB\] {
+  position: sticky;
+  top: 0px;
+  z-index: 10;
+}
+
+.ant-table {
+  font-family: 'Inter Tight' !important;
+  font-size: 14px !important;
+}
+
+.ant-table .ant-table-thead > tr > th {
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+}
+
+.ant-table .ant-table-tbody > tr > td {
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+}
+
+.ant-pagination .ant-pagination-item-active {
+  font-weight: 600;
+  background-color: #ffffff;
+  border-color: #259796 !important;
+}
+
+.ant-pagination .ant-pagination-item-active a {
+  color: #259796 !important;
+}
+
+/* Pagination custom styles */
+.pagination-custom .ant-pagination-item {
+  border-radius: 8px !important;
+  margin: 0 2px !important;
+}
+
+.pagination-custom .ant-pagination-item-active {
+  background-color: #259796 !important;
+  border-color: #259796 !important;
+}
+
+.pagination-custom .ant-pagination-item-active a {
+  color: white !important;
+}
+
+.pagination-custom .ant-pagination-prev,
+.pagination-custom .ant-pagination-next {
+  border-radius: 8px !important;
+  margin: 0 2px !important;
+}
+
+.pagination-custom .ant-pagination-options {
+  margin-left: 16px !important;
+}
+
+.pagination-custom .ant-pagination-options-quick-jumper {
+  margin-left: 8px !important;
+}
+
+/* Ensure pagination controls are visible and functional */
+.ant-table-pagination {
+  margin: 16px 0 !important;
+  padding: 0 16px !important;
+}
+
+.ant-table-pagination .ant-pagination-total {
+  margin-right: 16px !important;
+}
