@@ -284,14 +284,6 @@ export default async function handler(
       - Transmission across Chemical Synapses
       - Nephrin family interactions
 
-      EXAMPLES:
-      ${examples
-        .map(
-          (e) =>
-            `Pathway: ${e.pathway}\nClass: ${e.class}\nSubclass: ${e.subclass}`
-        )
-        .join('\n\n')}
-
       RESPONSE FORMAT:
       Pathway: <pathway name>
       Class: <exact Reactome class name>
@@ -390,16 +382,16 @@ export default async function handler(
           role: 'user',
           content: `Classify the following pathways. You MUST provide BOTH class and subclass for each pathway - never leave subclass empty or as N/A.
 
-Provide results in this exact format for each pathway:
+          Provide results in this exact format for each pathway:
 
-Pathway: <pathway name>
-Class: <exact Reactome class name>
-Subclass: <exact Reactome subclass name - REQUIRED>
+          Pathway: <pathway name>
+          Class: <exact Reactome class name>
+          Subclass: <exact Reactome subclass name - REQUIRED>
 
-REMEMBER: Every pathway needs both a class AND a meaningful subclass based on the hierarchical examples provided.
+          REMEMBER: Every pathway needs both a class AND a meaningful subclass based on the hierarchical examples provided.
 
-Pathways:
-${batchPrompt}`,
+          Pathways:
+          ${batchPrompt}`,
         };
 
         try {
