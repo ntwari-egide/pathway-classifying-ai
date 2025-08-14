@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
 
@@ -103,7 +104,7 @@ export default async function handler(
       CRITICAL REQUIREMENTS:
       - Use ONLY exact Reactome pathway names and subclasses
       - Assign BOTH class AND subclass for every pathway
-      - Never use "Unknown" or "N/A" for subclasses
+      - When you are not sure about the subclass, use "Unclassified Pathway" as the subclass and "Unclassified Pathway" as the class
       - ALWAYS consider the SPECIES when classifying pathways
       - Match existing Reactome classifications when possible
       - Adapt classifications based on species complexity and evolutionary distance from human
@@ -427,7 +428,7 @@ export default async function handler(
             ...row,
             Pathway_Class_assigned: 'Unknown',
             Subclass_assigned: 'Unknown',
-          }));
+          }));  
         }
       });
 

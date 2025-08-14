@@ -123,7 +123,7 @@ export default async function handler(
       REQUIREMENTS:
       - Use ONLY exact Reactome pathway names
       - Assign BOTH class AND subclass for every pathway
-      - Never use "Unknown" or "N/A" for subclasses
+      - When you are not sure about the subclass, use "Unclassified Pathway" as the subclass and "Unclassified Pathway" as the class
       - ALWAYS consider the SPECIES when classifying pathways
       - Different species may have different pathway classifications due to evolutionary differences
 
