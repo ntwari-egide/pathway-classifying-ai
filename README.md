@@ -47,7 +47,7 @@ Your TSV file should contain these columns:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/pathway-classifying-ai.git
+git clone https://github.com/ntwari-egide/pathway-classifying-ai.git
 cd pathway-classifying-ai
 ```
 
