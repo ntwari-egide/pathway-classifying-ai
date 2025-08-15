@@ -30,30 +30,45 @@ function batchArray<T>(arr: T[], size: number): T[][] {
 }
 
 // Simplified fallback classification function - minimal logic to avoid errors
-function classifyPathwayFallback(pathwayName: string, species: string): {
+function classifyPathwayFallback(
+  pathwayName: string,
+  species: string
+): {
   class: string;
   subclass: string;
 } {
   const name = pathwayName.toLowerCase();
-  
+
   // Very basic fallback - let AI handle the complex species-specific logic
   if (name.includes('metabolism') || name.includes('metabolic')) {
     return { class: 'Metabolism', subclass: 'Metabolism of proteins' };
   }
   if (name.includes('signaling') || name.includes('signal')) {
-    return { class: 'Signal Transduction', subclass: 'Intracellular signaling by second messengers' };
+    return {
+      class: 'Signal Transduction',
+      subclass: 'Intracellular signaling by second messengers',
+    };
   }
   if (name.includes('immune')) {
     return { class: 'Immune System', subclass: 'Innate Immune System' };
   }
   if (name.includes('transcription') || name.includes('rna')) {
-    return { class: 'Gene expression (Transcription)', subclass: 'RNA Polymerase II Transcription' };
+    return {
+      class: 'Gene expression (Transcription)',
+      subclass: 'RNA Polymerase II Transcription',
+    };
   }
   if (name.includes('neuron') || name.includes('synapse')) {
-    return { class: 'Neuronal System', subclass: 'Transmission across Chemical Synapses' };
+    return {
+      class: 'Neuronal System',
+      subclass: 'Transmission across Chemical Synapses',
+    };
   }
   if (name.includes('development')) {
-    return { class: 'Developmental Biology', subclass: 'Nervous system development' };
+    return {
+      class: 'Developmental Biology',
+      subclass: 'Nervous system development',
+    };
   }
   if (name.includes('cell cycle')) {
     return { class: 'Cell Cycle', subclass: 'Mitotic Cell Cycle' };
@@ -61,7 +76,7 @@ function classifyPathwayFallback(pathwayName: string, species: string): {
   if (name.includes('apoptosis') || name.includes('death')) {
     return { class: 'Programmed Cell Death', subclass: 'Apoptosis' };
   }
-  
+
   // Default fallback
   return { class: 'Metabolism', subclass: 'Metabolism of proteins' };
 }
@@ -426,7 +441,8 @@ export default async function handler(
 
             if (classAssigned === 'Unknown' || subclassAssigned === 'Unknown') {
               const fallbackClassification = classifyPathwayFallback(
-                row.Pathway, row.Species
+                row.Pathway,
+                row.Species
               );
               classAssigned =
                 classAssigned === 'Unknown'

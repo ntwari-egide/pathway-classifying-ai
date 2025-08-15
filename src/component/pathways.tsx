@@ -128,39 +128,53 @@ const PathwaysPage = () => {
                   );
 
                   setData(dataWithIds);
-                  
+
                   // Create sorted TSV for download (sorted by AI classifications)
-                  const sortedDataForDownload = [...dataWithIds].sort((a, b) => {
-                    // First sort by AI Class Assigned
-                    const classA = a.Pathway_Class_assigned || '';
-                    const classB = b.Pathway_Class_assigned || '';
-                    const classComparison = classA.localeCompare(classB);
-                    
-                    if (classComparison !== 0) {
-                      return classComparison;
+                  const sortedDataForDownload = [...dataWithIds].sort(
+                    (a, b) => {
+                      // First sort by AI Class Assigned
+                      const classA = a.Pathway_Class_assigned || '';
+                      const classB = b.Pathway_Class_assigned || '';
+                      const classComparison = classA.localeCompare(classB);
+
+                      if (classComparison !== 0) {
+                        return classComparison;
+                      }
+
+                      // If classes are the same, sort by AI Subclass Assigned
+                      const subclassA = a.Subclass_assigned || '';
+                      const subclassB = b.Subclass_assigned || '';
+                      return subclassA.localeCompare(subclassB);
                     }
-                    
-                    // If classes are the same, sort by AI Subclass Assigned
-                    const subclassA = a.Subclass_assigned || '';
-                    const subclassB = b.Subclass_assigned || '';
-                    return subclassA.localeCompare(subclassB);
-                  });
+                  );
 
                   // Convert sorted data to TSV format
-                  const headers = ['Pathway', 'Pathway Class', 'Subclass', 'Species', 'Source', 'URL', 'UniProt IDS', 'AI Class Assigned', 'AI Subclass Assigned'];
+                  const headers = [
+                    'Pathway',
+                    'Pathway Class',
+                    'Subclass',
+                    'Species',
+                    'Source',
+                    'URL',
+                    'UniProt IDS',
+                    'AI Class Assigned',
+                    'AI Subclass Assigned',
+                  ];
                   const tsvContent = [
                     headers.join('\t'),
-                    ...sortedDataForDownload.map(row => [
-                      row.Pathway || '',
-                      row['Pathway Class'] || '',
-                      row.Subclass || '',
-                      row.Species || '',
-                      row.Source || '',
-                      row.URL || '',
-                      row['UniProt IDS'] || '',
-                      row.Pathway_Class_assigned || '',
-                      row.Subclass_assigned || ''
-                    ].join('\t'))
+                    ...sortedDataForDownload.map((row) =>
+                      [
+                        row.Pathway || '',
+                        row['Pathway Class'] || '',
+                        row.Subclass || '',
+                        row.Species || '',
+                        row.Source || '',
+                        row.URL || '',
+                        row['UniProt IDS'] || '',
+                        row.Pathway_Class_assigned || '',
+                        row.Subclass_assigned || '',
+                      ].join('\t')
+                    ),
                   ].join('\n');
 
                   const blob = new Blob([tsvContent], {
@@ -168,7 +182,6 @@ const PathwaysPage = () => {
                   });
                   const url = URL.createObjectURL(blob);
                   setDownloadUrl(url);
-
                 } else if (data.error) {
                   message.error(data.error);
                   setProgress(null);
@@ -211,18 +224,18 @@ const PathwaysPage = () => {
         );
 
         setData(dataWithIds);
-        
+
         // Create sorted TSV for download (sorted by AI classifications)
         const sortedDataForDownload = [...dataWithIds].sort((a, b) => {
           // First sort by AI Class Assigned
           const classA = a.Pathway_Class_assigned || '';
           const classB = b.Pathway_Class_assigned || '';
           const classComparison = classA.localeCompare(classB);
-          
+
           if (classComparison !== 0) {
             return classComparison;
           }
-          
+
           // If classes are the same, sort by AI Subclass Assigned
           const subclassA = a.Subclass_assigned || '';
           const subclassB = b.Subclass_assigned || '';
@@ -230,20 +243,32 @@ const PathwaysPage = () => {
         });
 
         // Convert sorted data to TSV format
-        const headers = ['Pathway', 'Pathway Class', 'Subclass', 'Species', 'Source', 'URL', 'UniProt IDS', 'AI Class Assigned', 'AI Subclass Assigned'];
+        const headers = [
+          'Pathway',
+          'Pathway Class',
+          'Subclass',
+          'Species',
+          'Source',
+          'URL',
+          'UniProt IDS',
+          'AI Class Assigned',
+          'AI Subclass Assigned',
+        ];
         const tsvContent = [
           headers.join('\t'),
-          ...sortedDataForDownload.map(row => [
-            row.Pathway || '',
-            row['Pathway Class'] || '',
-            row.Subclass || '',
-            row.Species || '',
-            row.Source || '',
-            row.URL || '',
-            row['UniProt IDS'] || '',
-            row.Pathway_Class_assigned || '',
-            row.Subclass_assigned || ''
-          ].join('\t'))
+          ...sortedDataForDownload.map((row) =>
+            [
+              row.Pathway || '',
+              row['Pathway Class'] || '',
+              row.Subclass || '',
+              row.Species || '',
+              row.Source || '',
+              row.URL || '',
+              row['UniProt IDS'] || '',
+              row.Pathway_Class_assigned || '',
+              row.Subclass_assigned || '',
+            ].join('\t')
+          ),
         ].join('\n');
 
         const blob = new Blob([tsvContent], {
@@ -326,11 +351,11 @@ const PathwaysPage = () => {
     const classA = a.Pathway_Class_assigned || '';
     const classB = b.Pathway_Class_assigned || '';
     const classComparison = classA.localeCompare(classB);
-    
+
     if (classComparison !== 0) {
       return classComparison;
     }
-    
+
     // If classes are the same, sort by AI Subclass Assigned
     const subclassA = a.Subclass_assigned || '';
     const subclassB = b.Subclass_assigned || '';
@@ -342,19 +367,22 @@ const PathwaysPage = () => {
       title: 'Pathway',
       dataIndex: 'Pathway',
       width: 220,
-      sorter: (a: PathwayRow, b: PathwayRow) => a.Pathway.localeCompare(b.Pathway),
+      sorter: (a: PathwayRow, b: PathwayRow) =>
+        a.Pathway.localeCompare(b.Pathway),
     },
     {
       title: 'Species',
       dataIndex: 'Species',
       width: 120,
-      sorter: (a: PathwayRow, b: PathwayRow) => a.Species.localeCompare(b.Species),
+      sorter: (a: PathwayRow, b: PathwayRow) =>
+        a.Species.localeCompare(b.Species),
     },
     {
       title: 'Source',
       dataIndex: 'Source',
       width: 150,
-      sorter: (a: PathwayRow, b: PathwayRow) => a.Source.localeCompare(b.Source),
+      sorter: (a: PathwayRow, b: PathwayRow) =>
+        a.Source.localeCompare(b.Source),
     },
     {
       title: 'URL',
@@ -375,18 +403,24 @@ const PathwaysPage = () => {
       title: 'AI Class Assigned',
       dataIndex: 'Pathway_Class_assigned',
       width: 180,
-      sorter: (a: PathwayRow, b: PathwayRow) => (a.Pathway_Class_assigned || '').localeCompare(b.Pathway_Class_assigned || ''),
+      sorter: (a: PathwayRow, b: PathwayRow) =>
+        (a.Pathway_Class_assigned || '').localeCompare(
+          b.Pathway_Class_assigned || ''
+        ),
       render: (value: string) => (
-        <span className="font-medium text-green-700">{value || 'None'}</span>
+        <span className='font-medium text-green-700'>{value || 'None'}</span>
       ),
     },
     {
       title: 'AI Subclass Assigned',
       dataIndex: 'Subclass_assigned',
       width: 180,
-      sorter: (a: PathwayRow, b: PathwayRow) => (a.Subclass_assigned || '').localeCompare(b.Subclass_assigned || ''),
+      sorter: (a: PathwayRow, b: PathwayRow) =>
+        (a.Subclass_assigned || '').localeCompare(b.Subclass_assigned || ''),
       render: (value: string) => (
-        <span className="text-xs font-medium text-purple-700">{value || 'None'}</span>
+        <span className='text-xs font-medium text-purple-700'>
+          {value || 'None'}
+        </span>
       ),
     },
   ];
@@ -402,7 +436,8 @@ const PathwaysPage = () => {
           </h1>
           <p className='text-base text-slate-600 max-w-2xl mx-auto font-sans'>
             Upload your pathways data and let our AI intelligently classify and
-            reassign pathway classes with advanced machine learning. Results are automatically sorted by AI classifications for easy analysis.
+            reassign pathway classes with advanced machine learning. Results are
+            automatically sorted by AI classifications for easy analysis.
           </p>
         </div>
 
@@ -427,9 +462,7 @@ const PathwaysPage = () => {
                 >
                   <div className='flex items-center gap-3 font-sans'>
                     <UploadOutlined className='text-xl' />
-                    <span className='font-sans'>
-                      Upload pathways TSV file
-                    </span>
+                    <span className='font-sans'>Upload pathways TSV file</span>
                   </div>
                 </Button>
               </Upload>
@@ -576,7 +609,8 @@ const PathwaysPage = () => {
                   )}
                 </p>
                 <p className='text-xs text-slate-500 mt-1'>
-                  Results are automatically sorted by AI Class and Subclass assignments
+                  Results are automatically sorted by AI Class and Subclass
+                  assignments
                 </p>
                 <p className='text-xs text-slate-500 mt-1'>
                   UniProt IDS data is included in the downloadable file
@@ -701,7 +735,8 @@ const PathwaysPage = () => {
                     >
                       Transform your biological pathways data with intelligent
                       AI classification. Upload your TSV file and get instant,
-                      accurate pathway class assignments with automatic sorting by AI classifications.
+                      accurate pathway class assignments with automatic sorting
+                      by AI classifications.
                     </p>
                   </div>
                 </div>
@@ -819,10 +854,12 @@ const PathwaysPage = () => {
                     <span className='font-medium'>Expected columns:</span>
                   </div>
                   <p className='text-xs text-blue-600 mt-1'>
-                    Pathway, Pathway Class, Subclass, Species, Source, URL, UniProt IDS
+                    Pathway, Pathway Class, Subclass, Species, Source, URL,
+                    UniProt IDS
                   </p>
                   <p className='text-xs text-blue-500 mt-1'>
-                    Note: UniProt IDS will be included in downloaded files but hidden from the table view
+                    Note: UniProt IDS will be included in downloaded files but
+                    hidden from the table view
                   </p>
                 </div>
               </div>

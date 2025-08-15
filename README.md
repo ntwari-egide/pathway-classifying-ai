@@ -1,4 +1,4 @@
- # AI Pathway Classification System
+# AI Pathway Classification System
 
 A sophisticated web application that uses artificial intelligence to automatically classify and reassign biological pathway classes. Built with modern web technologies and designed for researchers, bioinformaticians, and anyone working with biological pathway data.
 
@@ -15,7 +15,9 @@ This application takes biological pathway data in TSV (Tab-Separated Values) for
 - **Sort results intelligently** by AI-assigned classifications for easy analysis
 
 ### Input Data Format
+
 Your TSV file should contain these columns:
+
 - **Pathway** - The pathway name/description
 - **Pathway Class** - Original pathway class
 - **Subclass** - Original subclass
@@ -25,6 +27,7 @@ Your TSV file should contain these columns:
 - **UniProt IDS** - UniProt identifiers (hidden in UI, included in downloads)
 
 ### Output Features
+
 - **AI Class Assigned** - New pathway class determined by AI
 - **AI Subclass Assigned** - New subclass determined by AI
 - **Automatic sorting** by AI classifications (both in table and downloaded file)
@@ -35,18 +38,21 @@ Your TSV file should contain these columns:
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+ installed
 - Git installed
 - A GitHub account
 - A Vercel account (free)
 
 ### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/yourusername/pathway-classifying-ai.git
 cd pathway-classifying-ai
 ```
 
 ### 2. Install Dependencies
+
 ```bash
 npm install
 # or
@@ -56,6 +62,7 @@ pnpm install
 ```
 
 ### 3. Run Locally
+
 ```bash
 npm run dev
 # or
@@ -71,23 +78,28 @@ Open [http://localhost:3000](http://localhost:3000) to see your application runn
 This project is configured for **automatic deployment** to Vercel. Here's how it works:
 
 ### 1. Connect to Vercel
+
 1. Go to [vercel.com](https://vercel.com) and sign up/login
 2. Click "New Project"
 3. Import your GitHub repository
 4. Vercel will automatically detect it's a Next.js project
 
 ### 2. Automatic Deployment
+
 - **Every push to main branch** automatically deploys to production
 - **Every pull request** gets a preview deployment
 - **No manual deployment needed** - it's fully automated!
 
 ### 3. Environment Variables (if needed)
+
 If your project needs environment variables:
+
 1. Go to your project settings in Vercel
 2. Add them in the "Environment Variables" section
 3. Redeploy if needed
 
 ### 4. Custom Domain (Optional)
+
 1. In Vercel project settings, go to "Domains"
 2. Add your custom domain
 3. Follow DNS configuration instructions
@@ -124,7 +136,9 @@ pathway-classifying-ai/
 ## 📁 Key Files Explained
 
 ### `src/component/pathways.tsx`
+
 The main component that handles:
+
 - File upload and parsing
 - Data display in tables (Pathway, Species, Source, URL, AI Class, AI Subclass)
 - Expandable rows showing original pathway classifications
@@ -133,13 +147,17 @@ The main component that handles:
 - Search and filtering
 
 ### `src/pages/api/pathways-assign.ts`
+
 Main API endpoint that:
+
 - Receives pathway data
 - Processes with AI classification
 - Returns results with new classifications
 
 ### `src/pages/api/pathways-assign-stream.ts`
+
 Streaming API endpoint for:
+
 - Real-time progress updates
 - Large file processing
 - Better user experience
@@ -147,6 +165,7 @@ Streaming API endpoint for:
 ## 🔧 Development
 
 ### Available Scripts
+
 ```bash
 npm run dev          # Start development server
 npm run build        # Build for production
@@ -157,6 +176,7 @@ npm run type-check   # Check TypeScript types
 ```
 
 ### Code Quality
+
 - **ESLint**: Code linting and formatting
 - **Prettier**: Consistent code formatting
 - **Husky**: Git hooks for pre-commit checks
@@ -176,11 +196,13 @@ npm run type-check   # Check TypeScript types
 ## 🌐 API Endpoints
 
 ### POST `/api/pathways-assign`
+
 - **Purpose**: Process pathways with AI classification
 - **Input**: JSON with pathways array and resetCache option
 - **Output**: TSV data with AI classifications
 
 ### POST `/api/pathways-assign-stream`
+
 - **Purpose**: Stream processing for large files
 - **Input**: Same as above
 - **Output**: Server-Sent Events with progress updates
@@ -188,6 +210,7 @@ npm run type-check   # Check TypeScript types
 ## 🚀 Deployment Workflow
 
 ### Automatic Deployment Process
+
 1. **Push to GitHub**: Make changes and push to main branch
 2. **Vercel Detection**: Vercel automatically detects the push
 3. **Build Process**: Vercel builds your Next.js application
@@ -195,6 +218,7 @@ npm run type-check   # Check TypeScript types
 5. **Live Update**: Your changes are live at your Vercel URL
 
 ### Manual Deployment (if needed)
+
 ```bash
 # Build locally
 npm run build
@@ -208,21 +232,25 @@ vercel --prod
 ### Common Issues
 
 **Build Fails on Vercel**
+
 - Check that all dependencies are in `package.json`
 - Ensure Node.js version is compatible (18+)
 - Check build logs in Vercel dashboard
 
 **Local Development Issues**
+
 - Clear `node_modules` and reinstall: `rm -rf node_modules && npm install`
 - Check Node.js version: `node --version`
 - Ensure all environment variables are set
 
 **API Errors**
+
 - Check API endpoint URLs
 - Verify data format matches expected schema
 - Check browser console for error messages
 
 ### Getting Help
+
 1. Check the [Vercel documentation](https://vercel.com/docs)
 2. Review [Next.js documentation](https://nextjs.org/docs)
 3. Check GitHub issues for similar problems
@@ -252,7 +280,9 @@ vercel --prod
 6. Create a Pull Request
 
 ### Commit Convention
+
 This project uses [conventional commits](https://www.conventionalcommits.org/):
+
 - `feat:` New features
 - `fix:` Bug fixes
 - `docs:` Documentation changes
