@@ -5,8 +5,8 @@
  * @returns {JSX.Element} The main app component
  */
 
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/next';
+// import { Analytics } from '@vercel/analytics/react';
+// import { SpeedInsights } from '@vercel/speed-insights/next';
 import { AppProps } from 'next/app';
 import Script from 'next/script';
 
@@ -20,8 +20,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       {/* <Provider store={store}> */}
-      <Analytics />
-      <SpeedInsights />
+      {/* <Analytics />
+      <SpeedInsights /> */}
       <Component {...pageProps} />
       {/* </Provider> */}
       <Script
