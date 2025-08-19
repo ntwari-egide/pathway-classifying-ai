@@ -193,6 +193,59 @@ npm run type-check   # Check TypeScript types
 7. **Display**: Table shows sorted results for easy viewing
 8. **Download**: User can download complete results with all data, sorted by AI classifications
 
+The pathway classification system combines **prompt-engineered AI reasoning** with a **biology-informed fallback algorithm** to ensure that every pathway is categorized consistently with Reactome standards.
+
+### **1. Data Upload**
+
+-   Users provide a TSV file containing pathways, species, source (e.g., Reactome, KEGG), and existing classifications (if available).
+    
+-   Example input row:
+```Pathway: Glycolysis  
+Species: Homo sapiens  
+Source: KEGG  
+```
+
+### **2. Parsing & Validation**
+-   The system checks whether the input is valid and non-empty.
+-   Reactome pathways with existing curated classifications are preserved as “ground truth” examples for the AI.
+
+### **3. AI System Prompt Engineering**
+
+-   The AI is given a **structured, domain-specific system prompt** that enforces:
+    
+    -   Use **EXACT Reactome terminology** (no freeform labels like “Other” or “N/A”).
+        
+    -   Always assign **both Class and Subclass** (e.g., “Metabolism → Metabolism of amino acids and derivatives”).
+        
+    -   Always consider the **species context** when classifying (since pathways differ across evolutionary lineages).
+        
+    
+-   For example, the same pathway term may classify differently depending on the species:
+    
+    -   Immune signaling in **Homo sapiens** → _Immune System → Adaptive Immune System_
+        
+    -   Immune signaling in **Drosophila melanogaster** → _Immune System → Innate Immune System_
+        
+    -   Immune signaling in **E. coli** → Not valid; falls back to _Metabolism → Metabolism of proteins_
+    
+This prevents the AI from “hallucinating” human-like pathways in organisms that don’t biologically support them.
+
+### **4. Fallback Logic**
+
+-   If the AI output is incomplete, inconsistent, or contains “Unknown,” the system applies a **rule-based fallback classifier**.
+    
+-   These rules use **string-matching + species-awareness** to map pathways to the closest valid Reactome class.
+    
+-   Example fallback:
+    
+    -   Input: Pathway = Methanogenesis, Species = Methanocaldococcus jannaschii
+        
+    -   AI might return incomplete → fallback assigns:
+        
+        _Class = Metabolism, Subclass = Methanogenesis_
+
+This ensures **no pathway is left unclassified**.
+
 ## 🌐 API Endpoints
 
 ### POST `/api/pathways-assign`
